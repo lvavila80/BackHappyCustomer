@@ -1,16 +1,13 @@
 package com.project.Project.project.model;
 
-/**import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Column;
+import jakarta.persistence.*;
+
 import java.util.Date;
 
 @Entity
-**/
+@Table(name = "usuarios")
 public class Usuario {
-/**    @Id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
@@ -104,5 +101,4 @@ public class Usuario {
     public void setFechaUltimoCambioClave(Date fechaUltimoCambioClave) {
         this.fechaUltimoCambioClave = fechaUltimoCambioClave;
     }
-**/
 }
