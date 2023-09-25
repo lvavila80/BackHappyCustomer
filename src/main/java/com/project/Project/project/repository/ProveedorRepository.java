@@ -1,7 +1,7 @@
 package com.project.Project.project.repository;
 
 import com.project.Project.project.model.Proveedor;
-import com.project.Project.project.model.Usuario;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
