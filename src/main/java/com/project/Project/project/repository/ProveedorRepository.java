@@ -11,6 +11,7 @@ import java.util.List;
 
 @Repository
 public interface ProveedorRepository extends JpaRepository<Proveedor, Long> {
+    Proveedor findByIdentificacion(int identificacion);
 
     @Query(value = "SELECT a.nombrearticulo " +
             "FROM articulos a " +
