@@ -39,4 +39,13 @@ public class UsuarioService {
         return usuarioDAO;
     }
 
+    public UsuarioDAO insertarUsuario(Usuario usuario) {
+        try {
+            Usuario nuevoUsuario = usuarioRepository.save(usuario);
+            return convertToUsuarioDAO(nuevoUsuario);
+        } catch (Exception e) {
+            throw new RuntimeException("No se pudo insertar el usuario: " + e.getMessage(), e);
+        }
+    }
+
 }
