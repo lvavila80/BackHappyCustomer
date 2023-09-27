@@ -13,7 +13,7 @@ public class Categoria {
     @Column(name = "id")
     private int id;
 
-    @Column(name = "nombreCategoria", length = 45)
+    @Column(name = "nombrecategoria", length = 45)
     private String nombreCategorias;
 
     // Constructor

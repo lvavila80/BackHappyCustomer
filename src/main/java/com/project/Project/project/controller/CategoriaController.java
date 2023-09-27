@@ -12,15 +12,20 @@ import org.springframework.web.bind.annotation.*;
 public class CategoriaController {
 
     @Autowired
-    private CategoriaRepository categoriaRepository;
+    private CategoriaService categoriaService;
 
     @PostMapping("/createCategoria")
-    public ResponseEntity<Categoria> createCategoria(@RequestBody Categoria categoria) {
+    public ResponseEntity<String> createCategoria(@RequestBody Categoria categoria) {
         try {
-            Categoria _categoria = categoriaRepository.save(new Categoria(categoria.getNombreCategorias()));
-            return new ResponseEntity<>(_categoria, HttpStatus.CREATED);
+            if (categoriaService.findByName(categoria.getNombreCategorias()).isPresent()) {
+                return new ResponseEntity<>("Ya existe una categoría con este nombre", HttpStatus.CONFLICT);
+            }
+
+            categoriaService.createCategoria(new Categoria(categoria.getNombreCategorias()));
+
+            return new ResponseEntity<>("Categoria se creó satisfactoriamente", HttpStatus.CREATED);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Ocurrio un error durante el registro", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

@@ -14,22 +14,11 @@ public class CategoriaService {
     @Autowired
     private CategoriaRepository categoriaRepository;
 
-    public ResponseEntity<?> createCategoria(Categoria categoria) {
-        try {
-            Optional<Categoria> existingCategoria = categoriaRepository.findByNombreCategorias(categoria.getNombreCategorias());
-            if (existingCategoria.isPresent()) {
-                return ResponseEntity.badRequest().body("Error creating Categoria: Categoria with name " + categoria.getNombreCategorias() + " already exists");
-            }
-            Categoria newCategoria = categoriaRepository.save(categoria);
-            return ResponseEntity.ok(newCategoria);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error creating Categoria: " + e.getMessage());
-        }
+    public Optional<Categoria> findByName(String nombreCategorias) {
+        return categoriaRepository.findByNombreCategorias(nombreCategorias);
     }
 
-    public ResponseEntity<?> get(int id) {
-
-        return null;
+    public Categoria createCategoria(Categoria categoria) {
+        return categoriaRepository.save(categoria);
     }
 }
-
