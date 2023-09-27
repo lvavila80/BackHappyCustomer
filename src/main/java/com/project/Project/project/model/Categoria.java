@@ -20,13 +20,11 @@ public class Categoria {
     public Categoria() {
     }
 
-    // Constructor con parámetros
     public Categoria(int id, String nombreCategorias) {
         this.id = id;
         this.nombreCategorias = nombreCategorias;
     }
 
-    // Getters y setters
     public int getId() {
         return id;
     }

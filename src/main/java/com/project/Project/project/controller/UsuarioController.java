@@ -40,7 +40,7 @@ public class UsuarioController {
         return usuariosConRol;
     }
 
-    @PostMapping("/insertar")
+    @PostMapping("/insertarUsuario")
     public ResponseEntity<Map<String, Object>> insertarUsuario(@RequestBody Map<String, Object> usuarioData) {
         Map<String, Object> response = new HashMap<>();
 
