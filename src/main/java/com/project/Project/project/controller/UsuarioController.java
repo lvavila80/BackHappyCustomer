@@ -81,5 +81,27 @@ public class UsuarioController {
         }
     }
 
+    @PostMapping("/authUsuario")
+    public ResponseEntity<String> validarUsuario(@RequestBody Map<String, Object> credenciales) {
+        try {
+            String correo = (String) credenciales.get("correo");
+            String passwd = (String) credenciales.get("passwd");
+
+            Optional<Usuario> usuarioOpt = usuarioRepository.findByCorreo(correo);
+
+            if (usuarioOpt.isPresent()) {
+                Usuario usuario = usuarioOpt.get();
+                if (usuario.getPasswd().equals(passwd)) {
+                    return ResponseEntity.ok("Usuario Autenticado.");
+                } else {
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas.");
+                }
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas.");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error en el servidor: " + e.getMessage());
+        }
+    }
 
 }
