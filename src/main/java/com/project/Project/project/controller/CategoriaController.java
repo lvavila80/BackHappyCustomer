@@ -1,43 +1,31 @@
 package com.project.Project.project.controller;
-
 import com.project.Project.project.model.Categoria;
 import com.project.Project.project.repository.CategoriaRepository;
-import com.project.Project.project.repository.UsuarioRepository;
+import com.project.Project.project.service.CategoriaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
-import java.util.Optional;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/categorias")
 public class CategoriaController {
 
     @Autowired
-    private CategoriaRepository categoriaRepository;
+    private CategoriaService categoriaService;
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    @PostMapping("/createCategoria")
+    public ResponseEntity<String> createCategoria(@RequestBody Categoria categoria) {
+        try {
+            if (categoriaService.findByName(categoria.getNombreCategorias()).isPresent()) {
+                return new ResponseEntity<>("Ya existe una categoría con este nombre", HttpStatus.CONFLICT);
+            }
 
+            categoriaService.createCategoria(new Categoria(categoria.getNombreCategorias()));
 
-    @GetMapping("/getusuario/{id}")
-    public ResponseEntity<Categoria> getUsuarioById(@PathVariable int id) {
-        Optional<Categoria> categoria = categoriaRepository.findById(id);
-        if (categoria.isPresent()) {
-            return ResponseEntity.ok(categoria.get());
-        } else {
-            return ResponseEntity.notFound().build();
+            return new ResponseEntity<>("Categoria se creó satisfactoriamente", HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Ocurrio un error durante el registro", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-    @GetMapping("/usuariosNativo/{userId}")
-    public List<Object[]> getALLCategoriasWithRol(@PathVariable int userId) {
-        List<Object[]> usuariosConRol = usuarioRepository.findUsuariosWithRolId(userId);
-        return usuariosConRol;
-    }
 }
-
