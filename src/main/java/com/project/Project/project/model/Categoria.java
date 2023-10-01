@@ -25,7 +25,6 @@ public class Categoria {
            this.nombreCategorias = nombreCategorias;
     }
 
-    // Getters y setters
     public int getId() {
         return id;
     }
