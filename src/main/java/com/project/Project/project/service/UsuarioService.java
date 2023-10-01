@@ -48,4 +48,13 @@ public class UsuarioService {
         }
     }
 
+    public boolean validarUsuario(String correo, String passwd) {
+        Optional<Usuario> usuarioOpt = usuarioRepository.findByCorreo(correo);
+        if (usuarioOpt.isPresent()) {
+            Usuario usuario = usuarioOpt.get();
+            return usuario.getPasswd().equals(passwd);
+        }
+        return false;
+    }
+
 }
