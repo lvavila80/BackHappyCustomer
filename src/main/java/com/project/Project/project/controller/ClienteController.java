@@ -3,12 +3,14 @@ package com.project.Project.project.controller;
 import com.project.Project.project.model.Cliente;
 import com.project.Project.project.service.ClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/clientes")
+@RequestMapping("/api/clientes")
 public class ClienteController {
 
     @Autowired
@@ -29,8 +31,13 @@ public class ClienteController {
         clienteService.eliminarCliente(id);
     }
 
-    @PostMapping("/nuevo")
-    public Cliente insertarCliente(@RequestBody Cliente cliente) {
-        return clienteService.guardarCliente(cliente);
+    @PostMapping("/nuevoCliente")
+    public ResponseEntity<Object> insertarCliente(@RequestBody Cliente cliente) {
+        try {
+            Cliente savedCliente = clienteService.guardarCliente(cliente);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedCliente);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al crear el cliente: " + e.getMessage());
+        }
     }
 }
