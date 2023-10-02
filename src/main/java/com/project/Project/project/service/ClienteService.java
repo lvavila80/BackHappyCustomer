@@ -1,9 +1,9 @@
 package com.project.Project.project.service;
+
 import com.project.Project.project.model.Cliente;
 import com.project.Project.project.repository.ClienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 
 @Service
 public class ClienteService {

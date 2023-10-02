@@ -10,6 +10,4 @@ import java.util.List;
 @Repository
 public interface VentaRepository extends JpaRepository<Venta, Long> {
 
-    @Query(value = "SELECT * FROM ventas WHERE cantidad > :cantidad", nativeQuery = true)
-    List<Venta> findVentasByCantidadGreaterThan(int cantidad);
 }

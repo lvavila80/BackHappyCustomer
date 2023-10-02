@@ -10,8 +10,6 @@ public class Cliente {
     private int identificacion;
     private String nombre;
 
-    // Getters y Setters (o puedes generarlos automáticamente según tu entorno de desarrollo)
-
     public Long getId() {
         return id;
     }

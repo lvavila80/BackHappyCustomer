@@ -1,6 +1,6 @@
 package com.project.Project.project.model;
-import jakarta.persistence.*;
 
+import jakarta.persistence.*;
 import java.util.Date;
 
 @Entity
@@ -11,18 +11,16 @@ public class Venta {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int cantidad;
+    private String cantidad;
 
-    @Column(name = "valor_unitario")
+    @Column(name = "valorunitario")
     private double valorUnitario;
 
-    @Column(name = "valor_total")
+    @Column(name = "valortotal")
     private double valorTotal;
 
-    @Column(name = "fecha_venta")
+    @Column(name = "fechaventa")
     private Date fechaVenta;
-
-    // Getters y Setters
 
     public Long getId() {
         return id;
@@ -32,11 +30,11 @@ public class Venta {
         this.id = id;
     }
 
-    public int getCantidad() {
+    public String getCantidad() {
         return cantidad;
     }
 
-    public void setCantidad(int cantidad) {
+    public void setCantidad(String cantidad) {  // Cambiado a String
         this.cantidad = cantidad;
     }
 

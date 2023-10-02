@@ -1,7 +1,6 @@
 package com.project.Project.project.controller;
 
 import com.project.Project.project.model.Cliente;
-import com.project.Project.project.repository.ClienteRepository;
 import com.project.Project.project.service.ClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -28,5 +27,10 @@ public class ClienteController {
     @DeleteMapping("/{id}")
     public void eliminarCliente(@PathVariable Long id) {
         clienteService.eliminarCliente(id);
+    }
+
+    @PostMapping("/nuevo")
+    public Cliente insertarCliente(@RequestBody Cliente cliente) {
+        return clienteService.guardarCliente(cliente);
     }
 }
