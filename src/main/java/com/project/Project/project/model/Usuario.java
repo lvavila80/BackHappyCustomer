@@ -21,30 +21,33 @@ public class Usuario {
     @Column(name = "cedula", length = 11)
     private int cedula;
 
+    @Column(name = "nombre", length = 45)
+    private String nombre;
+
     @Column(name = "estado", length = 45)
     private String estado;
 
     @Column(name = "cambiarclave")
     private boolean cambiarClave;
 
+
     @Column(name = "fecha_ult_cambio_clave")
     private Date fechaUltimoCambioClave;
 
-    // Constructor, getters y setters
 
     public Usuario() {
     }
 
-    public Usuario(String correo, String passwd, int cedula, String estado, boolean cambiarClave, Date fechaUltimoCambioClave) {
+    public Usuario(String correo, String passwd, int cedula, String nombre, String estado, boolean cambiarClave, Date fechaUltimoCambioClave) {
         this.correo = correo;
         this.passwd = passwd;
         this.cedula = cedula;
+        this.nombre = nombre;
         this.estado = estado;
         this.cambiarClave = cambiarClave;
         this.fechaUltimoCambioClave = fechaUltimoCambioClave;
     }
 
-    // Getters y setters
 
     public int getId() {
         return id;
@@ -76,6 +79,13 @@ public class Usuario {
 
     public void setCedula(int cedula) {
         this.cedula = cedula;
+    }
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 
     public String getEstado() {

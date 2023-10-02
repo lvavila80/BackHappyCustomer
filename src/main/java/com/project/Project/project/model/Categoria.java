@@ -25,7 +25,10 @@ public class Categoria {
            this.nombreCategorias = nombreCategorias;
     }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 8ddc05484d0c084d5aa56624e92c2e65174af8a1
     public int getId() {
         return id;
     }
