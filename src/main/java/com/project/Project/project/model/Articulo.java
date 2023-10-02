@@ -1,16 +1,15 @@
 package com.project.Project.project.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
+@Table(name = "articulos")
+
 public class Articulo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     private String nombrearticulo;
     private String marca;
@@ -74,7 +73,7 @@ public class Articulo {
         this.unidaddemedida = unidaddemedida;
     }
 
-    public int getUnidadesdisponibles() {
+    public Integer getUnidadesdisponibles() {
         return unidadesdisponibles;
     }
 
@@ -84,6 +83,14 @@ public class Articulo {
 
     public double getValorunitario() {
         return valorunitario;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public void setValorunitario(double valorunitario) {

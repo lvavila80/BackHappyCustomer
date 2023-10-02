@@ -10,7 +10,7 @@ public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private int id;
+    private Integer id;
 
     @Column(name = "correo", length = 45, nullable = false)
     private String correo;
@@ -38,7 +38,7 @@ public class Usuario {
     public Usuario() {
     }
 
-    public Usuario(String correo, String passwd, int cedula, String nombre, String estado, boolean cambiarClave, Date fechaUltimoCambioClave) {
+    public Usuario(String correo, String passwd, Integer cedula, String nombre, String estado, boolean cambiarClave, Date fechaUltimoCambioClave) {
         this.correo = correo;
         this.passwd = passwd;
         this.cedula = cedula;
@@ -49,7 +49,7 @@ public class Usuario {
     }
 
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -73,7 +73,7 @@ public class Usuario {
         this.passwd = passwd;
     }
 
-    public int getCedula() {
+    public Integer getCedula() {
         return cedula;
     }
 
