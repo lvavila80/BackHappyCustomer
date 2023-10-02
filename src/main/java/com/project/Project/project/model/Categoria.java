@@ -20,12 +20,12 @@ public class Categoria {
     public Categoria() {
     }
 
-    // Constructor con parámetros
+
     public Categoria(String nombreCategorias) {
            this.nombreCategorias = nombreCategorias;
     }
 
-    // Getters y setters
+
     public int getId() {
         return id;
     }

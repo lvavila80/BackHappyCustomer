@@ -8,17 +8,17 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-@Service
-public class CategoriaService {
+    @Service
+    public class CategoriaService {
 
-    @Autowired
-    private CategoriaRepository categoriaRepository;
+        @Autowired
+        private CategoriaRepository categoriaRepository;
 
-    public Optional<Categoria> findByName(String nombreCategorias) {
-        return categoriaRepository.findByNombreCategorias(nombreCategorias);
+        public Optional<Categoria> findByName(String nombreCategorias) {
+            return categoriaRepository.findByNombreCategorias(nombreCategorias);
+        }
+
+        public Categoria createCategoria(Categoria categoria) {
+            return categoriaRepository.save(categoria);
+        }
     }
-
-    public Categoria createCategoria(Categoria categoria) {
-        return categoriaRepository.save(categoria);
-    }
-}
