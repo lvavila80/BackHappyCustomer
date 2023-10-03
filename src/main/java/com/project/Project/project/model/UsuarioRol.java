@@ -11,29 +11,29 @@ public class UsuarioRol {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private int id;
+    private Integer id;
 
     public UsuarioRol() {
     }
 
     @Getter
     @Column(name = "idusuario")
-    private int idUsuario;
+    private Integer idUsuario;
 
     @Getter
     @Column(name = "idrol")
-    private int idRol;
+    private Integer idRol;
 
-    public UsuarioRol(int idUsuario, int idRol) {
+    public UsuarioRol(Integer idUsuario, Integer idRol) {
         this.idUsuario = idUsuario;
         this.idRol = idRol;
     }
 
-    public void setIdUsuario(int idUsuario) {
+    public void setIdUsuario(Integer idUsuario) {
         this.idUsuario = idUsuario;
     }
 
-    public void setIdRol(int idRol) {
+    public void setIdRol(Integer idRol) {
         this.idRol = idRol;
     }
 }

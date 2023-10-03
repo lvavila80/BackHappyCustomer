@@ -1,16 +1,16 @@
 package com.project.Project.project.model;
 
 public class ProveedorDAO {
-    private int id;
+    private Integer id;
     private String nombre;
-    private int identificacion;
-    private int telefono;
+    private Integer identificacion;
+    private Integer telefono;
     private String correo;
 
     public ProveedorDAO() {
     }
 
-    public ProveedorDAO(int id, String nombre, int identificacion, int telefono, String correo) {
+    public ProveedorDAO(Integer id, String nombre, Integer identificacion, Integer telefono, String correo) {
         this.id = id;
         this.nombre = nombre;
         this.identificacion = identificacion;
@@ -18,7 +18,7 @@ public class ProveedorDAO {
         this.correo = correo;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -34,7 +34,7 @@ public class ProveedorDAO {
         this.nombre = nombre;
     }
 
-    public int getIdentificacion() {
+    public Integer getIdentificacion() {
         return identificacion;
     }
 
@@ -42,7 +42,7 @@ public class ProveedorDAO {
         this.identificacion = identificacion;
     }
 
-    public int getTelefono() {
+    public Integer getTelefono() {
         return telefono;
     }
 
