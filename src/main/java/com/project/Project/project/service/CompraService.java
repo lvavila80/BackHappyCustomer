@@ -1,6 +1,6 @@
 package com.project.Project.project.service;
-import com.project.Project.project.model.Compra;
-import com.project.Project.project.model.CompraArticuloDTO;
+import com.project.Project.project.model.*;
+import com.project.Project.project.model.ArticulosCompraDTO;
 import com.project.Project.project.repository.CompraRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -21,56 +21,62 @@ public class CompraService {
     private EntityManager entityManager;
 
     @Transactional
-    public void guardarCompraYRelaciones(CompraArticuloDTO compraArticuloDTO) {
-        try {
-            Integer idArticulo = articuloService.guardarArticulo(compraArticuloDTO);
-            Compra savedCompra = guardarCompra(compraArticuloDTO.getCompra());
-
-            if (savedCompra == null || savedCompra.getId() == null) {
-                throw new RuntimeException("Error al guardar la Compra");
-            }
-
-            Integer idCompra = savedCompra.getId();
-
+    public void guardarCompraYRelaciones(CompraArticulosDTO compraArticulosDTO) {
+        for(ArticulosCompraDTO articuloCompra : compraArticulosDTO.getArticulosCompra()) {
             try {
-                compraRepository.insertCompraArticulo(idArticulo, idCompra);
-            } catch (Exception e) {
-                throw new RuntimeException("Error al insertar en bd.compra_articulo: " + e.getMessage());
-            }
+                Compra compra = new Compra();
+                compra.setUnidadescompradas(articuloCompra.getUnidadesCompradas());
+                compra.setValorunidad(articuloCompra.getValorUnidad());
+                Integer idArticulo = articuloService.guardarArticulo(articuloCompra);
+                Compra savedCompra = guardarCompra(articuloCompra);
 
-            try {
-                compraRepository.insertCompraCategoria(idCompra, compraArticuloDTO.getIdCategoria());
-            } catch (Exception e) {
-                throw new RuntimeException("Error al insertar en bd.compra_categoria: " + e.getMessage());
-            }
+                if (savedCompra == null || savedCompra.getId() == null) {
+                    throw new RuntimeException("Error al guardar la Compra");
+                }
 
-            try {
-                compraRepository.insertCompraProveedor(compraArticuloDTO.getIdProveedor(), idCompra);
-            } catch (Exception e) {
-                throw new RuntimeException("Error al insertar en bd.compra_proveedor: " + e.getMessage());
-            }
+                Integer idCompra = savedCompra.getId();
 
-            try {
-                compraRepository.insertCompraUsuario(idCompra, compraArticuloDTO.getIdUsuario());
-            } catch (Exception e) {
-                throw new RuntimeException("Error al insertar en bd.compra_usuario: " + e.getMessage());
-            }
+                try {
+                    compraRepository.insertCompraArticulo(idArticulo, idCompra);
+                } catch (Exception e) {
+                    throw new RuntimeException("Error al insertar en bd.compra_articulo: " + e.getMessage());
+                }
 
-            try {
-                compraRepository.insertArticuloCategoria(idArticulo, compraArticuloDTO.getIdCategoria());
-            } catch (Exception e) {
-                throw new RuntimeException("Error al insertar en bd.articulo_categoria: " + e.getMessage());
-            }
+                try {
+                    compraRepository.insertCompraCategoria(idCompra, articuloCompra.getIdCategoria());
+                } catch (Exception e) {
+                    throw new RuntimeException("Error al insertar en bd.compra_categoria: " + e.getMessage());
+                }
 
-        } catch (Exception e) {
-            throw new RuntimeException("Error al guardar compra y relaciones: " + e.getMessage(), e);
+                try {
+                    compraRepository.insertCompraProveedor(articuloCompra.getIdProveedor(), idCompra);
+                } catch (Exception e) {
+                    throw new RuntimeException("Error al insertar en bd.compra_proveedor: " + e.getMessage());
+                }
+
+                try {
+                    compraRepository.insertCompraUsuario(idCompra, compraArticulosDTO.getIdUsuario());
+                } catch (Exception e) {
+                    throw new RuntimeException("Error al insertar en bd.compra_usuario: " + e.getMessage());
+                }
+
+                try {
+                    compraRepository.insertArticuloCategoria(idArticulo, articuloCompra.getIdCategoria());
+                } catch (Exception e) {
+                    throw new RuntimeException("Error al insertar en bd.articulo_categoria: " + e.getMessage());
+                }
+
+            } catch (Exception e) {
+                throw new RuntimeException("Error al guardar compra y relaciones: " + e.getMessage(), e);
+            }
         }
     }
-    public Compra guardarCompra(Compra compra) {
+    public Compra guardarCompra(ArticulosCompraDTO ArtCompra) {
         try {
-            if(compra.getValortotal()==0){
-                compra.setValortotal(compra.getValorunidad()*compra.getUnidadescompradas());
-            }
+            Compra compra = new Compra();
+            compra.setUnidadescompradas(ArtCompra.getUnidadesCompradas());
+            compra.setValorunidad(ArtCompra.getValorUnidad());
+            compra.setValortotal(ArtCompra.getValorUnidad()*ArtCompra.getUnidadesCompradas());
             return compraRepository.save(compra);
         } catch (Exception e) {
             throw new RuntimeException("Error al guardar la Compra", e);
