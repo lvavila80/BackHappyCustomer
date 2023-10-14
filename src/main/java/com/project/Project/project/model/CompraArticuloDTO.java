@@ -1,9 +1,5 @@
 package com.project.Project.project.model;
 
-
-import com.project.Project.project.model.Articulo;
-import com.project.Project.project.model.Compra;
-
 public class CompraArticuloDTO {
     private Compra compra;
     private Articulo articulo;

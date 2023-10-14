@@ -12,6 +12,5 @@ public interface ArticuloRepository extends JpaRepository<Articulo, Integer> {
             String nombrearticulo,
             String marca,
             String modelo,
-            String color
-    );
+            String color);
 }
