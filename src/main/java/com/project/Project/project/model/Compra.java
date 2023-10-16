@@ -19,10 +19,10 @@ public class Compra {
         this.fechacompra = new Date();
     }
 
-    public Compra(Integer unidadescompradas, double valorunidad, double valortotal) {
+    public Compra(Integer unidadescompradas, double valorunidad) {
         this.unidadescompradas = unidadescompradas;
         this.valorunidad = valorunidad;
-        this.valortotal = valortotal;
+        this.valortotal = (unidadescompradas*valorunidad);
         this.fechacompra = new Date();
     }
 

@@ -23,14 +23,14 @@ public class Articulo {
     public Articulo() {
     }
 
-    public Articulo(String nombrearticulo, String marca, String modelo, String color, String unidaddemedida, int unidadesdisponibles, double valorunitario) {
+    public Articulo(String nombrearticulo, String marca, String modelo, String color, String unidaddemedida) {
         this.nombrearticulo = nombrearticulo;
         this.marca = marca;
         this.modelo = modelo;
         this.color = color;
         this.unidaddemedida = unidaddemedida;
-        this.unidadesdisponibles = unidadesdisponibles;
-        this.valorunitario = valorunitario;
+        this.unidadesdisponibles = 0;
+        this.valorunitario = 0;
     }
 
     public String getNombrearticulo() {
