@@ -19,6 +19,12 @@ public class Compra {
         this.fechacompra = new Date();
     }
 
+    @Column(name = "devuelto")
+    private Boolean devuelto = false;
+
+    @Column(name = "descripcion_devolucion", length = 200)
+    private String descripcionDevolucion;
+
     public Compra(Integer unidadescompradas, double valorunidad) {
         this.unidadescompradas = unidadescompradas;
         this.valorunidad = valorunidad;
@@ -67,6 +73,22 @@ public class Compra {
     }
 
     private Date fechacompra;
+
+    public Boolean getDevuelto() {
+        return devuelto;
+    }
+
+    public void setDevuelto(Boolean devuelto) {
+        this.devuelto = devuelto;
+    }
+
+    public String getDescripcionDevolucion() {
+        return descripcionDevolucion;
+    }
+
+    public void setDescripcionDevolucion(String descripcionDevolucion) {
+        this.descripcionDevolucion = descripcionDevolucion;
+    }
 
 
 }
