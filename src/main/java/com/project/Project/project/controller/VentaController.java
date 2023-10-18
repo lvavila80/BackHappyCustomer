@@ -17,18 +17,6 @@ public class VentaController {
     @Autowired
     private VentaService ventaService;
 
-    @GetMapping
-    public ResponseEntity<List<Venta>> getAllVentas() {
-        List<Venta> ventas = ventaService.getAllVentas();
-        return ResponseEntity.ok(ventas);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Venta> getVentaById(@PathVariable Long id) {
-        Optional<Venta> venta = ventaService.getVentaById(id);
-        return venta.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
-    }
-
     @PostMapping("/nuevaVenta")
     public ResponseEntity<Object> createVenta(@RequestBody Venta venta) {
         try {
@@ -38,5 +26,4 @@ public class VentaController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al crear la venta: " + e.getMessage());
         }
     }
-
 }

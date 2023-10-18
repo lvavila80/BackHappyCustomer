@@ -2,7 +2,7 @@ package com.project.Project.project.model;
 import java.util.List;
 
 public class CompraArticulosDTO {
-    private List<ArticulosCompraDTO> articulosCompra;  // Lista de ArticuloCompraDTO
+    private List<ArticulosCompraDTO> articulosCompra;
     private Integer idUsuario;
     private Integer idProveedor;
 
