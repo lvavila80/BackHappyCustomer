@@ -9,15 +9,28 @@ public class Compra {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Integer id;
 
+
+    @Column(name = "unidadescompradas")
     private Integer unidadescompradas;
+    @Column(name = "valorunidad")
     private double valorunidad;
+    @Column(name = "valortotal")
     private double valortotal;
 
     public Compra() {
         this.fechacompra = new Date();
     }
+    @Column(name = "fechacompra")
+    private Date fechacompra;
+
+    @Column(name = "devuelto")
+    private Boolean devuelto = false;
+
+    @Column(name = "descripcion_devolucion", length = 200)
+    private String descripcionDevolucion;
 
     public Compra(Integer unidadescompradas, double valorunidad) {
         this.unidadescompradas = unidadescompradas;
@@ -65,8 +78,5 @@ public class Compra {
     public void setFechacompra(Date fechacompra) {
         this.fechacompra = fechacompra;
     }
-
-    private Date fechacompra;
-
 
 }

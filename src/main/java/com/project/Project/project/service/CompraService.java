@@ -82,4 +82,11 @@ public class CompraService {
             throw new RuntimeException("Error al guardar la Compra", e);
         }
     }
+@Transactional
+    public void actualizarDevolucionYDescripcion(Integer id, Boolean devuelto, String descripcion) {
+        int updatedRows = compraRepository.actualizarDevolucionYDescripcion(id, devuelto, descripcion);
+        if (updatedRows == 0) {
+            throw new RuntimeException("No se pudo actualizar la compra con ID: " + id);
+        }
+    }
 }

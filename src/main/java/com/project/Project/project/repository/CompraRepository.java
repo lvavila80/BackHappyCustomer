@@ -29,4 +29,15 @@ public interface CompraRepository extends JpaRepository<Compra, Integer> {
     @Query(value = "INSERT INTO bd.articulo_categoria (idarticulo, idcategoria) VALUES (:idArticulo, :idCategoria)", nativeQuery = true)
     void insertArticuloCategoria(@Param("idArticulo") Integer idArticulo, @Param("idCategoria") Integer idCategoria);
 
+    @Modifying
+    @Query("UPDATE Compra c SET c.devuelto = :devuelto, c.descripcionDevolucion = :descripcion WHERE c.id = :id")
+    int actualizarDevolucionYDescripcion(@Param("id") Integer id, @Param("devuelto") Boolean devuelto, @Param("descripcion") String descripcion);
+
+    @Query(value = "SELECT cantidad FROM bd.compra_articulo WHERE idarticulo = :idArticulo AND idcompra = :idCompra", nativeQuery = true)
+    int obtenerCantidadArticuloCompra(@Param("idArticulo") Integer idArticulo, @Param("idCompra") Integer idCompra);
+
+    @Modifying
+    @Query(value = "UPDATE bd.articulos SET unidadesdisponibles = unidadesdisponibles - :cantidad WHERE id = :idArticulo AND unidadesdisponibles - :cantidad >= 0", nativeQuery = true)
+    void descontarUnidadesArticulo(@Param("idArticulo") Integer idArticulo, @Param("cantidad") Integer cantidad);
+
 }
