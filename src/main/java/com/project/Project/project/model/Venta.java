@@ -3,6 +3,7 @@ package com.project.Project.project.model;
 import jakarta.persistence.*;
 import java.util.Date;
 
+
 @Entity
 @Table(name = "ventas")
 public class Venta {
@@ -34,7 +35,7 @@ public class Venta {
         return cantidad;
     }
 
-    public void setCantidad(String cantidad) {  // Cambiado a String
+    public void setCantidad(String cantidad) {
         this.cantidad = cantidad;
     }
 
@@ -62,3 +63,4 @@ public class Venta {
         this.fechaVenta = fechaVenta;
     }
 }
+
