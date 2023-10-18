@@ -2,6 +2,7 @@ package com.project.Project.project.controller;
 
 import com.project.Project.project.model.CompraArticulosDTO;
 import com.project.Project.project.service.CompraService;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,5 +26,21 @@ public class CompraController {
         } catch (RuntimeException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+    @PostMapping("/devolucionCompra")
+    public ResponseEntity<String> actualizarDevolucion(@RequestBody DevoUpdateDTO devoUpdateDTO) {
+        try {
+            compraService.actualizarDevolucion(devoUpdateDTO.getIdCompra(), devoUpdateDTO.getDescripcion(), devoUpdateDTO.getDevuelto());
+            return new ResponseEntity<>("Devolución actualizada exitosamente", HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Data
+    public static class DevoUpdateDTO {
+        private Integer idCompra;
+        private String descripcion;
+        private Boolean devuelto;
     }
 }
