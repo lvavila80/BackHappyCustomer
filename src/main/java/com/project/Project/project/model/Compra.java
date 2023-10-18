@@ -9,33 +9,15 @@ public class Compra {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Integer id;
-
-
-    @Column(name = "unidadescompradas")
-    private Integer unidadescompradas;
-    @Column(name = "valorunidad")
-    private double valorunidad;
-    @Column(name = "valortotal")
     private double valortotal;
 
     public Compra() {
         this.fechacompra = new Date();
     }
-    @Column(name = "fechacompra")
-    private Date fechacompra;
 
-    @Column(name = "devuelto")
-    private Boolean devuelto = false;
-
-    @Column(name = "descripcion_devolucion", length = 200)
-    private String descripcionDevolucion;
-
-    public Compra(Integer unidadescompradas, double valorunidad) {
-        this.unidadescompradas = unidadescompradas;
-        this.valorunidad = valorunidad;
-        this.valortotal = (unidadescompradas*valorunidad);
+    public Compra(double valortotal) {
+        this.valortotal = valortotal;
         this.fechacompra = new Date();
     }
 
@@ -47,21 +29,6 @@ public class Compra {
         this.id = id;
     }
 
-    public Integer getUnidadescompradas() {
-        return unidadescompradas;
-    }
-
-    public void setUnidadescompradas(int unidadescompradas) {
-        this.unidadescompradas = unidadescompradas;
-    }
-
-    public double getValorunidad() {
-        return valorunidad;
-    }
-
-    public void setValorunidad(double valorunidad) {
-        this.valorunidad = valorunidad;
-    }
 
     public double getValortotal() {
         return valortotal;
@@ -79,4 +46,5 @@ public class Compra {
         this.fechacompra = fechacompra;
     }
 
+    private Date fechacompra;
 }

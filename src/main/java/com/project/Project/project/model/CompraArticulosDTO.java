@@ -4,13 +4,23 @@ import java.util.List;
 public class CompraArticulosDTO {
     private List<ArticulosCompraDTO> articulosCompra;  // Lista de ArticuloCompraDTO
     private Integer idUsuario;
+    private Integer idProveedor;
 
-    public CompraArticulosDTO(List<ArticulosCompraDTO> articulosCompra, Integer idUsuario) {
+
+    public CompraArticulosDTO(List<ArticulosCompraDTO> articulosCompra, Integer idUsuario, Integer idProveedor) {
         this.articulosCompra = articulosCompra;
         this.idUsuario = idUsuario;
+        this.idProveedor = idProveedor;
     }
 
     public CompraArticulosDTO() {
+    }
+    public Integer getIdProveedor() {
+        return idProveedor;
+    }
+
+    public void setIdProveedor(Integer idProveedor) {
+        this.idProveedor = idProveedor;
     }
 
     public List<ArticulosCompraDTO> getArticulosCompra() {
