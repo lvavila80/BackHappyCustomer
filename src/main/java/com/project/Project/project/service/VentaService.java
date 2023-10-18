@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 
+import java.util.Date;
+
 @Service
 public class VentaService {
 
@@ -39,13 +41,15 @@ public class VentaService {
                 valorTotal += (encontrado.getValorunitario() * unidadesVendidas);
             }
 
+            venta.setFechaVenta(new Date());
+
             venta.setValorTotal(valorTotal);
             Venta savedVenta = ventaRepository.save(venta);
 
-            ArticuloVentaDTO articuloVenta = null;  // Variable para almacenar articuloVenta
+            ArticuloVentaDTO articuloVenta = null;
 
             for (ArticuloVentaDTO av : ventaArticulosDTO.getArticulosVenta()) {
-                articuloVenta = av;  // Asignar valor a la variable
+                articuloVenta = av;
                 try {
                     int idArticulo = articuloVenta.getArticulo();
                     Articulo encontrado = articuloService.findById(idArticulo);

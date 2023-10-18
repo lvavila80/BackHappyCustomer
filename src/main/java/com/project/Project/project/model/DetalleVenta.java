@@ -11,19 +11,24 @@ public class DetalleVenta {
     private int id;
 
     @Column(name = "idventa", nullable = false)
-    private int idVenta;
+    private int idventa;
 
     @Column(name = "idarticulo", nullable = false)
-    private int idArticulo;
+    private int idarticulo;
 
     @Column(name = "unidadesvendidas", nullable = false)
-    private int unidadesVendidas;
+    private int unidadesvendidas;
 
     @Column(name = "valorunidad", nullable = false)
-    private Double valorUnidad;
+    private Double valorunidad;
 
     @Column(name = "idcategoria", nullable = false)
-    private int idCategoria;
+    private int idcategoria;
+
+    @ManyToOne
+    @JoinColumn(name = "idventa", insertable = false, updatable = false)
+    private Venta venta;
+
 
     public int getId() {
         return id;
@@ -33,43 +38,51 @@ public class DetalleVenta {
         this.id = id;
     }
 
-    public int getIdVenta() {
-        return idVenta;
+    public int getIdventa() {
+        return idventa;
     }
 
-    public void setIdVenta(int idVenta) {
-        this.idVenta = idVenta;
+    public void setIdventa(int idventa) {
+        this.idventa = idventa;
     }
 
-    public int getIdArticulo() {
-        return idArticulo;
+    public int getIdarticulo() {
+        return idarticulo;
     }
 
-    public void setIdArticulo(int idArticulo) {
-        this.idArticulo = idArticulo;
+    public void setIdarticulo(int idarticulo) {
+        this.idarticulo = idarticulo;
     }
 
-    public int getUnidadesVendidas() {
-        return unidadesVendidas;
+    public int getUnidadesvendidas() {
+        return unidadesvendidas;
     }
 
-    public void setUnidadesVendidas(int unidadesVendidas) {
-        this.unidadesVendidas = unidadesVendidas;
+    public void setUnidadesvendidas(int unidadesvendidas) {
+        this.unidadesvendidas = unidadesvendidas;
     }
 
-    public Double getValorUnidad() {
-        return valorUnidad;
+    public Double getValorunidad() {
+        return valorunidad;
     }
 
-    public void setValorUnidad(Double valorUnidad) {
-        this.valorUnidad = valorUnidad;
+    public void setValorunidad(Double valorunidad) {
+        this.valorunidad = valorunidad;
     }
 
-    public int getIdCategoria() {
-        return idCategoria;
+    public int getIdcategoria() {
+        return idcategoria;
     }
 
-    public void setIdCategoria(int idCategoria) {
-        this.idCategoria = idCategoria;
+    public void setIdcategoria(int idcategoria) {
+        this.idcategoria = idcategoria;
+    }
+
+    public Venta getVenta() {
+        return venta;
+    }
+
+    public void setVenta(Venta venta) {
+        this.venta = venta;
     }
 }
