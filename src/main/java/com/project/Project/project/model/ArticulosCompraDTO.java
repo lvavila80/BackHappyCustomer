@@ -6,14 +6,12 @@ public class ArticulosCompraDTO {
     private double valorUnidad;
     private double valorTotal;
     private Integer idCategoria;
-    private Integer idProveedor;
 
     public ArticulosCompraDTO(Articulo articulo, int unidadesCompradas, double valorUnidad, Integer idCategoria, Integer idProveedor) {
         this.articulo = articulo;
         this.unidadesCompradas = unidadesCompradas;
         this.valorUnidad = valorUnidad;
         this.idCategoria = idCategoria;
-        this.idProveedor = idProveedor;
         this.valorTotal = (unidadesCompradas*valorUnidad);
     }
 
@@ -59,11 +57,4 @@ public class ArticulosCompraDTO {
         this.idCategoria = idCategoria;
     }
 
-    public Integer getIdProveedor() {
-        return idProveedor;
-    }
-
-    public void setIdProveedor(Integer idProveedor) {
-        this.idProveedor = idProveedor;
-    }
 }

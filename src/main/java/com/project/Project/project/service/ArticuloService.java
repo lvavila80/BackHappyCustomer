@@ -5,6 +5,7 @@ import com.project.Project.project.model.ArticulosCompraDTO;
 import com.project.Project.project.model.Compra;
 import com.project.Project.project.model.CompraArticulosDTO;
 import com.project.Project.project.repository.ArticuloRepository;
+import com.project.Project.project.repository.CompraRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,9 @@ import java.util.Optional;
 public class ArticuloService {
     @Autowired
     private ArticuloRepository articuloRepository;
+    @Autowired
+    private CompraRepository compraRepository;
+
 
     public Integer guardarArticulo(ArticulosCompraDTO compraDTO) {
             Articulo articulo = compraDTO.getArticulo();
@@ -44,6 +48,11 @@ public class ArticuloService {
             articulo.setValorunitario(nuevoValor);
             articulo.setUnidadesdisponibles(compraDTO.getUnidadesCompradas());
             Articulo nuevoArticulo = articuloRepository.save(articulo);
+            try {
+                compraRepository.insertArticuloCategoria(nuevoArticulo.getId(), compraDTO.getIdCategoria());
+            } catch (Exception e) {
+                throw new RuntimeException("Error al insertar en bd.articulo_categoria: " + e.getMessage());
+            }
             return nuevoArticulo.getId();
         }
     }
