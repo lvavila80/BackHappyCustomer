@@ -9,7 +9,7 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import com.project.Project.project.model.DetalleCompra;
 @Service
 public class DetalleCompraService {
 
@@ -40,5 +40,25 @@ public class DetalleCompraService {
             throw new RuntimeException("Error al guardar compra y relaciones: " + e.getMessage(), e);
         }
     }
+
+        List<DetalleCompra> detalles = detalleCompraRepository.findByIdcompra(idcompra);
+
+        // Procesar cada DetalleCompra
+        for (DetalleCompra detalle : detalles) {
+            // Aquí puedes hacer lo que necesites con cada DetalleCompra
+            // Por ejemplo, imprimir la información:
+            System.out.println("ID: " + detalle.getId());
+            System.out.println("ID Compra: " + detalle.getIdcompra());
+            System.out.println("ID Artículo: " + detalle.getIdarticulo());
+            System.out.println("Unidades compradas: " + detalle.getUnidadescompradas());
+            System.out.println("Valor unidad: " + detalle.getValorunidad());
+            //... y así sucesivamente para los demás campos.
+
+            // También puedes hacer otras operaciones, como actualizar datos, realizar cálculos, etc.
+        }
+
+        return detalles;  // Devuelve la lista procesada (aunque no la hemos modificado en este ejemplo)
+    }
+}
 
 }
