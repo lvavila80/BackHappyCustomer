@@ -6,6 +6,7 @@ import com.project.Project.project.model.Compra;
 import com.project.Project.project.model.CompraArticulosDTO;
 import com.project.Project.project.repository.ArticuloRepository;
 import com.project.Project.project.repository.CompraRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -65,5 +66,30 @@ public class ArticuloService {
             return true;
         }
         return false;
+    }
+
+    @Transactional
+    public Articulo findById(int idArticulo) {
+        Optional<Articulo> optionalArticulo = articuloRepository.findById(idArticulo);
+
+        if (optionalArticulo.isPresent()) {
+            Articulo articulo = optionalArticulo.get();
+            return articulo;
+        } else {
+            throw new RuntimeException("No se encontró el artículo con ID " + idArticulo);
+        }
+    }
+
+    @Transactional
+    public void findByIdAndUpdateUnidadesDisponibles(Integer idArticulo, int nuevasUnidades) {
+        Optional<Articulo> optionalArticulo = articuloRepository.findById(idArticulo);
+
+        if (optionalArticulo.isPresent()) {
+            Articulo articulo = optionalArticulo.get();
+            articulo.setUnidadesdisponibles(nuevasUnidades);
+            articuloRepository.save(articulo);
+        } else {
+            throw new RuntimeException("No se encontró el artículo con ID " + idArticulo);
+        }
     }
 }

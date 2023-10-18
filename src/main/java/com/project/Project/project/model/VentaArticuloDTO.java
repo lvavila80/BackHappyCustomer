@@ -4,42 +4,32 @@ import java.util.List;
 
 public class VentaArticuloDTO {
     private List<ArticuloVentaDTO> articulosVenta;
-    private Long idUsuario;
-    private Long idCliente;
-    private Long idCategoria;
+    private int idUsuario;
+    private int idCliente;
 
-    public VentaArticuloDTO(List<ArticuloVentaDTO> articulosVenta, Long idUsuario, Long idCliente, Long idCategoria) {
+    public VentaArticuloDTO(List<ArticuloVentaDTO> articulosVenta, int idUsuario, int idCliente) {
         this.articulosVenta = articulosVenta;
         this.idUsuario = idUsuario;
         this.idCliente = idCliente;
-        this.idCategoria = idCategoria;
     }
 
     public VentaArticuloDTO() {
     }
 
-    public Long getIdUsuario() {
+    public int getIdUsuario() {
         return idUsuario;
     }
 
-    public void setIdUsuario(Long idUsuario) {
+    public void setIdUsuario(int idUsuario) {
         this.idUsuario = idUsuario;
     }
 
-    public Long getIdCliente() {
+    public int getIdCliente() {
         return idCliente;
     }
 
-    public void setIdCliente(Long idCliente) {
+    public void setIdCliente(int idCliente) {
         this.idCliente = idCliente;
-    }
-
-    public Long getIdCategoria() {
-        return idCategoria;
-    }
-
-    public void setIdCategoria(Long idCategoria) {
-        this.idCategoria = idCategoria;
     }
 
     public List<ArticuloVentaDTO> getArticulosVenta() {

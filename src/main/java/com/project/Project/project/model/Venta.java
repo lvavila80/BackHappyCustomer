@@ -9,7 +9,7 @@ public class Venta {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int id;
 
     @Column(name = "valortotal")
     private double valorTotal;
@@ -23,11 +23,11 @@ public class Venta {
     @Column(name = "descripcion_devolucion", length = 200)
     private String descripcionDevolucion;
 
-    public Long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(int id) {
         this.id = id;
     }
 

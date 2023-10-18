@@ -13,14 +13,13 @@ import java.util.List;
 public interface VentaRepository extends JpaRepository<Venta, Long> {
     @Modifying
     @Query(value = "INSERT INTO venta_usuario (idventa, idusuario) VALUES (:idVenta, :idUsuario)", nativeQuery = true)
-    void insertVentaUsuario(@Param("idVenta") Long idVenta, @Param("idUsuario") Long idUsuario);
+    void insertVentaUsuario(@Param("idVenta") int idVenta, @Param("idUsuario") int idUsuario);
 
     @Modifying
     @Query(value = "INSERT INTO venta_cliente (idventa, idcliente) VALUES (:idVenta, :idCliente)", nativeQuery = true)
-    void insertVentaCliente(@Param("idVenta") Long idVenta, @Param("idCliente") Long idCliente);
+    void insertVentaCliente(@Param("idVenta") int idVenta, @Param("idCliente") int idCliente);
 
     @Modifying
     @Query(value = "INSERT INTO venta_categoria (idventa, idcategoria) VALUES (:idVenta, :idCategoria)", nativeQuery = true)
-    void insertVentaCategoria(@Param("idVenta") Long idVenta, @Param("idCategoria") Long idCategoria);
-
+    void insertVentaCategoria(@Param("idVenta") int idVenta, @Param("idCategoria") int idCategoria);
 }

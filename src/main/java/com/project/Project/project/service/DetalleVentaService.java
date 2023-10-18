@@ -23,14 +23,13 @@ public class DetalleVentaService {
     private EntityManager entityManager;
 
     @Transactional
-    public DetalleVenta guardarDetalleVenta(ArticuloVentaDTO ventaArticulosDTO, Venta savedVenta, Long idArticulo) {
+    public DetalleVenta guardarDetalleVenta(ArticuloVentaDTO ventaArticulosDTO, Venta savedVenta, int idArticulo) {
         try {
             DetalleVenta detalleVenta = new DetalleVenta();
-            detalleVenta.setIdVenta(idArticulo.intValue());
+            detalleVenta.setIdVenta(idArticulo);
             detalleVenta.setIdCategoria(ventaArticulosDTO.getIdCategoria());
-            detalleVenta.setValorUnidad(ventaArticulosDTO.getValorUnidad());
-            detalleVenta.setUnidadesVendidas(idArticulo.intValue());
-            detalleVenta.setIdArticulo(idArticulo.intValue());
+            detalleVenta.setUnidadesVendidas(idArticulo);
+            detalleVenta.setIdArticulo(idArticulo);
             return detalleVentaRepository.save(detalleVenta);
         } catch (Exception e) {
             throw new RuntimeException("Error al guardar venta y relaciones: " + e.getMessage(), e);
