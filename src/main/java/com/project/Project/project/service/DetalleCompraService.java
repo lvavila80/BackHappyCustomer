@@ -1,5 +1,5 @@
 package com.project.Project.project.service;
-
+import java.util.List;
 import com.project.Project.project.model.ArticulosCompraDTO;
 import com.project.Project.project.model.Compra;
 import com.project.Project.project.model.DetalleCompra;
@@ -19,6 +19,10 @@ public class DetalleCompraService {
     @Autowired
     private ArticuloService articuloService;
 
+    public List<DetalleCompra> getDetallesCompraByIdcompra(int idcompra) {
+        return detalleCompraRepository.findByIdcompra(idcompra);
+    }
+
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -36,4 +40,5 @@ public class DetalleCompraService {
             throw new RuntimeException("Error al guardar compra y relaciones: " + e.getMessage(), e);
         }
     }
+
 }
