@@ -40,7 +40,7 @@ public class DetalleVentaService {
             }
 
             DetalleVenta detalleVenta = new DetalleVenta();
-            detalleVenta.setIdventa(ventaId.intValue()); 
+            detalleVenta.setIdventa(ventaId.intValue());
             detalleVenta.setIdcategoria(ventaArticulosDTO.getIdCategoria());
             detalleVenta.setUnidadesvendidas(idArticulo);
             detalleVenta.setIdarticulo(idArticulo);
