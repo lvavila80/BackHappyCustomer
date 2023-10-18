@@ -49,9 +49,11 @@ public class DetalleCompraService {
     public ResponseEntity<String> reversarCompra(int idcompra){
         List<DetalleCompra> detalles = detalleCompraRepository.findByIdcompra(idcompra);
         for (DetalleCompra detalle : detalles) {
+            System.out.println();
             try {
-                Articulo articulo = articuloRepository.findById(idcompra).get();
-                articuloRepository.updateUnidadesDisponiblesById(idcompra, ((articulo.getUnidadesdisponibles())-(detalle.getUnidadescompradas())));
+                Articulo articulo = articuloRepository.findById(detalle.getIdarticulo()).get();
+                int nuevasUnidades = ((articulo.getUnidadesdisponibles())-(detalle.getUnidadescompradas()));
+                articuloRepository.updateUnidadesDisponiblesById(detalle.getIdarticulo(), nuevasUnidades);
             } catch (Exception e) {
                 return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
             }
