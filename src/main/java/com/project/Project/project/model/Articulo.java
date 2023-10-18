@@ -9,7 +9,7 @@ public class Articulo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private int id;
 
     private String nombrearticulo;
     private String marca;
@@ -73,7 +73,7 @@ public class Articulo {
         this.unidaddemedida = unidaddemedida;
     }
 
-    public Integer getUnidadesdisponibles() {
+    public int getUnidadesdisponibles() {
         return unidadesdisponibles;
     }
 
@@ -85,7 +85,7 @@ public class Articulo {
         return valorunitario;
     }
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
