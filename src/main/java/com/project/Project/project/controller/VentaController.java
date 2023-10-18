@@ -1,6 +1,6 @@
 package com.project.Project.project.controller;
 
-import com.project.Project.project.model.Venta;
+import com.project.Project.project.model.VentaArticuloDTO;
 import com.project.Project.project.service.VentaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,10 +18,10 @@ public class VentaController {
     private VentaService ventaService;
 
     @PostMapping("/nuevaVenta")
-    public ResponseEntity<Object> createVenta(@RequestBody Venta venta) {
+    public ResponseEntity<Object> createVenta(@RequestBody VentaArticuloDTO ventaArticuloDTO) {
         try {
-            Venta createdVenta = ventaService.createVenta(venta);
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdVenta);
+            ventaService.createVenta(ventaArticuloDTO);
+            return new ResponseEntity<>("Venta registrada exitosamente", HttpStatus.OK);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al crear la venta: " + e.getMessage());
         }
