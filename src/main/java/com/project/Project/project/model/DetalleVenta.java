@@ -8,52 +8,52 @@ public class DetalleVenta {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int id;
 
     @Column(name = "idventa", nullable = false)
-    private Long idVenta;
+    private int idVenta;
 
     @Column(name = "idarticulo", nullable = false)
-    private Long idArticulo;
+    private int idArticulo;
 
     @Column(name = "unidadesvendidas", nullable = false)
-    private Long unidadesVendidas;
+    private int unidadesVendidas;
 
     @Column(name = "valorunidad", nullable = false)
     private Double valorUnidad;
 
     @Column(name = "idcategoria", nullable = false)
-    private Long idCategoria;
+    private int idCategoria;
 
-    public Long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public Long getIdVenta() {
+    public int getIdVenta() {
         return idVenta;
     }
 
-    public void setIdVenta(Long idVenta) {
+    public void setIdVenta(int idVenta) {
         this.idVenta = idVenta;
     }
 
-    public Long getIdArticulo() {
+    public int getIdArticulo() {
         return idArticulo;
     }
 
-    public void setIdArticulo(Long idArticulo) {
+    public void setIdArticulo(int idArticulo) {
         this.idArticulo = idArticulo;
     }
 
-    public Long getUnidadesVendidas() {
+    public int getUnidadesVendidas() {
         return unidadesVendidas;
     }
 
-    public void setUnidadesVendidas(Long unidadesVendidas) {
+    public void setUnidadesVendidas(int unidadesVendidas) {
         this.unidadesVendidas = unidadesVendidas;
     }
 
@@ -65,11 +65,11 @@ public class DetalleVenta {
         this.valorUnidad = valorUnidad;
     }
 
-    public Long getIdCategoria() {
+    public int getIdCategoria() {
         return idCategoria;
     }
 
-    public void setIdCategoria(Long idCategoria) {
+    public void setIdCategoria(int idCategoria) {
         this.idCategoria = idCategoria;
     }
 }
