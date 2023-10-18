@@ -60,6 +60,7 @@ public class CompraService {
     @Transactional
     public void actualizarDevolucion(Integer idCompra, String descripcion, Boolean devuelto) {
         compraRepository.updateDevolucionInfo(idCompra, descripcion, devuelto);
+        detalleCompraService.reversarCompra(idCompra);
     }
 
 }

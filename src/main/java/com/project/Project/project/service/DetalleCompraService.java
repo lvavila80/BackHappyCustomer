@@ -1,15 +1,20 @@
 package com.project.Project.project.service;
 import java.util.List;
+
+import com.project.Project.project.model.Articulo;
 import com.project.Project.project.model.ArticulosCompraDTO;
 import com.project.Project.project.model.Compra;
 import com.project.Project.project.model.DetalleCompra;
+import com.project.Project.project.repository.ArticuloRepository;
+import com.project.Project.project.repository.CompraRepository;
 import com.project.Project.project.repository.DetalleCompraRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import com.project.Project.project.model.DetalleCompra;
 @Service
 public class DetalleCompraService {
 
@@ -17,7 +22,7 @@ public class DetalleCompraService {
     private DetalleCompraRepository detalleCompraRepository;
 
     @Autowired
-    private ArticuloService articuloService;
+    private ArticuloRepository articuloRepository;
 
     public List<DetalleCompra> getDetallesCompraByIdcompra(int idcompra) {
         return detalleCompraRepository.findByIdcompra(idcompra);
@@ -41,24 +46,16 @@ public class DetalleCompraService {
         }
     }
 
+    public ResponseEntity<String> reversarCompra(int idcompra){
         List<DetalleCompra> detalles = detalleCompraRepository.findByIdcompra(idcompra);
-
-        // Procesar cada DetalleCompra
         for (DetalleCompra detalle : detalles) {
-            // Aquí puedes hacer lo que necesites con cada DetalleCompra
-            // Por ejemplo, imprimir la información:
-            System.out.println("ID: " + detalle.getId());
-            System.out.println("ID Compra: " + detalle.getIdcompra());
-            System.out.println("ID Artículo: " + detalle.getIdarticulo());
-            System.out.println("Unidades compradas: " + detalle.getUnidadescompradas());
-            System.out.println("Valor unidad: " + detalle.getValorunidad());
-            //... y así sucesivamente para los demás campos.
-
-            // También puedes hacer otras operaciones, como actualizar datos, realizar cálculos, etc.
+            try {
+                Articulo articulo = articuloRepository.findById(idcompra).get();
+                articuloRepository.updateUnidadesDisponiblesById(idcompra, ((articulo.getUnidadesdisponibles())-(detalle.getUnidadescompradas())));
+            } catch (Exception e) {
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         }
-
-        return detalles;  // Devuelve la lista procesada (aunque no la hemos modificado en este ejemplo)
+        return new ResponseEntity<>("Compra y artículo agregados exitosamente", HttpStatus.OK);
     }
-}
-
 }
