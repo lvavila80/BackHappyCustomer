@@ -21,4 +21,10 @@ public interface CompraRepository extends JpaRepository<Compra, Integer> {
     @Modifying// Esta anotación indica que es una consulta que modifica datos
     @Query(value = "INSERT INTO bd.compra_proveedor (idproveedor, idcompra) VALUES (:idProveedor, :idCompra)", nativeQuery = true)
     void insertCompraProveedor(@Param("idProveedor") Integer idProveedor, @Param("idCompra") Integer idCompra);
+
+
+    @Modifying
+    @Query("UPDATE Compra c SET c.descripcionDevolucion = :descripcion, c.devuelto = :devuelto WHERE c.id = :id")
+    void updateDevolucionInfo(@Param("id") Integer id, @Param("descripcion") String descripcion, @Param("devuelto") Boolean devuelto);
+
 }
