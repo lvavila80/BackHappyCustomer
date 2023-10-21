@@ -8,8 +8,11 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+
+import static org.hibernate.query.sqm.tree.SqmNode.log;
 
 @Service
 public class CompraService {
@@ -35,10 +38,10 @@ public class CompraService {
         List<Categoria> categorias;
         categorias = categoriaRepository.findAll();
         for(ArticulosCompraDTO articuloCompra : compraArticulosDTO.getArticulosCompra()) {
-            valorTotal += (articuloCompra.getValorUnidad()*articuloCompra.getUnidadesCompradas());
-            if (!categorias.contains(articuloCompra.getIdCategoria())){
+            if (categorias.stream().noneMatch(categoria -> categoria.getId() == articuloCompra.getIdCategoria())) {
                 throw new RuntimeException("Error, no existe la categoría con el id :"+articuloCompra.getIdCategoria());
             }
+            valorTotal += (articuloCompra.getValorUnidad()*articuloCompra.getUnidadesCompradas());
         }
         Compra compra = new Compra(valorTotal);
         Compra savedCompra = compraRepository.save(compra);
