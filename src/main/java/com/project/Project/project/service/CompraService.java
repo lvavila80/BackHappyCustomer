@@ -8,6 +8,8 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class CompraService {
 
@@ -54,6 +56,10 @@ public class CompraService {
         } catch (Exception e) {
             throw new RuntimeException("Error al insertar en bd.compra_usuario: " + e.getMessage());
         }
+        Optional<Compra> existingCompra = compraRepository.findByValortotal(valorTotal);
+        if (existingCompra.isPresent()) {
+            throw new RuntimeException("La compra ya está registrada en la base de datos");
+        }
 
     }
 
@@ -62,5 +68,8 @@ public class CompraService {
         compraRepository.updateDevolucionInfo(idCompra, descripcion, devuelto);
         detalleCompraService.reversarCompra(idCompra);
     }
+
+
+
 
 }
