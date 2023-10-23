@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class VentaService {
@@ -25,6 +26,10 @@ public class VentaService {
         try {
             Venta venta = new Venta();
             Double valorTotal = 0.00;
+
+            if (!isValidVentaData(ventaArticulosDTO)) {
+                throw new RuntimeException("Los datos de la venta son incorrectos.");
+            }
 
             for (ArticuloVentaDTO articuloVenta : ventaArticulosDTO.getArticulosVenta()) {
                 int idArticulo = articuloVenta.getArticulo();
@@ -57,12 +62,23 @@ public class VentaService {
                 }
             }
 
+            // Manejar excepciones para cada solicitud de inserción
             try {
                 ventaRepository.insertVentaUsuario(savedVenta.getId(), ventaArticulosDTO.getIdUsuario());
-                ventaRepository.insertVentaCliente(savedVenta.getId(), ventaArticulosDTO.getIdCliente());
-
             } catch (Exception e) {
-                throw new RuntimeException("Error al insertar en la base de datos: " + e.getMessage(), e);
+                throw new RuntimeException("Error al insertar en venta_usuario: " + e.getMessage(), e);
+            }
+
+            try {
+                ventaRepository.insertVentaCliente(savedVenta.getId(), ventaArticulosDTO.getIdCliente());
+            } catch (Exception e) {
+                throw new RuntimeException("Error al insertar en venta_cliente: " + e.getMessage(), e);
+            }
+
+            try {
+                ventaRepository.insertVentaCategoria(savedVenta.getId(), ventaArticulosDTO.getIdCategoria());
+            } catch (Exception e) {
+                throw new RuntimeException("Error al insertar en venta_categoria: " + e.getMessage(), e);
             }
 
         } catch (Exception e) {
@@ -70,4 +86,19 @@ public class VentaService {
         }
     }
 
+    public boolean isValidVentaData(VentaArticuloDTO ventaArticuloDTO) {
+        List<ArticuloVentaDTO> articulosVenta = ventaArticuloDTO.getArticulosVenta();
+
+        if (articulosVenta == null || articulosVenta.isEmpty()) {
+            return false;
+        }
+
+        for (ArticuloVentaDTO articuloVenta : articulosVenta) {
+            if (articuloVenta.getArticulo() <= 0 || articuloVenta.getUnidadesVendidas() <= 0) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }
