@@ -32,60 +32,42 @@ public class VentaService {
 
                 Articulo encontrado = articuloService.findById(idArticulo);
 
-                if (encontrado.getId() != null) {
+                if (encontrado != null && encontrado.getUnidadesdisponibles() >= unidadesVendidas) {
                     articuloService.findByIdAndUpdateUnidadesDisponibles(encontrado.getId(),
                             (encontrado.getUnidadesdisponibles() - unidadesVendidas));
-                }
 
-                encontrado.getValorunitario();
-                valorTotal += (encontrado.getValorunitario() * unidadesVendidas);
+                    encontrado.getValorunitario();
+                    valorTotal += (encontrado.getValorunitario() * unidadesVendidas);
+                } else {
+                    throw new RuntimeException("No hay suficiente stock para el artículo con ID: " + idArticulo);
+                }
             }
 
             venta.setFechaVenta(new Date());
-
             venta.setValorTotal(valorTotal);
+
             Venta savedVenta = ventaRepository.save(venta);
 
-            ArticuloVentaDTO articuloVenta = null;
+            for (ArticuloVentaDTO articuloVenta : ventaArticulosDTO.getArticulosVenta()) {
+                int idArticulo = articuloVenta.getArticulo();
+                Articulo encontrado = articuloService.findById(idArticulo);
 
-            for (ArticuloVentaDTO av : ventaArticulosDTO.getArticulosVenta()) {
-                articuloVenta = av;
-                try {
-                    int idArticulo = articuloVenta.getArticulo();
-                    Articulo encontrado = articuloService.findById(idArticulo);
-
-                    if (encontrado.getId() != null) {
-                        articuloService.findByIdAndUpdateUnidadesDisponibles(encontrado.getId(),
-                                (encontrado.getUnidadesdisponibles() - articuloVenta.getUnidadesVendidas()));
-                    }
-
-                    DetalleVenta detalleVenta = detalleVentaService.guardarDetalleVenta(articuloVenta,
-                            savedVenta, encontrado.getId());
-                } catch (Exception e) {
-                    throw new RuntimeException("Error al guardar compra y relaciones: " + e.getMessage(), e);
+                if (encontrado != null) {
+                    DetalleVenta detalleVenta = detalleVentaService.guardarDetalleVenta(articuloVenta, savedVenta, encontrado.getId());
                 }
             }
 
             try {
                 ventaRepository.insertVentaUsuario(savedVenta.getId(), ventaArticulosDTO.getIdUsuario());
-            } catch (Exception e) {
-                throw new RuntimeException("Error al insertar en venta_usuario: " + e.getMessage(), e);
-            }
-
-            try {
                 ventaRepository.insertVentaCliente(savedVenta.getId(), ventaArticulosDTO.getIdCliente());
-            } catch (Exception e) {
-                throw new RuntimeException("Error al insertar en venta_cliente: " + e.getMessage(), e);
-            }
 
-            try {
-                ventaRepository.insertVentaCategoria(savedVenta.getId(), articuloVenta.getIdCategoria());
             } catch (Exception e) {
-                throw new RuntimeException("Error al insertar en venta_categoria: " + e.getMessage(), e);
+                throw new RuntimeException("Error al insertar en la base de datos: " + e.getMessage(), e);
             }
 
         } catch (Exception e) {
             throw new RuntimeException("Error al guardar venta y relaciones: " + e.getMessage(), e);
         }
     }
+
 }
