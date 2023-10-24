@@ -50,8 +50,8 @@ public class DetalleCompraService {
         List<DetalleCompra> detalles = detalleCompraRepository.findByIdcompra(idcompra);
         for (DetalleCompra detalle : detalles) {
             try {
-                Articulo articulo = articuloRepository.findById(idcompra).get();
-                articuloRepository.updateUnidadesDisponiblesById(idcompra, ((articulo.getUnidadesdisponibles())-(detalle.getUnidadescompradas())));
+                Articulo articulo = articuloRepository.findById(detalle.getIdarticulo()).get();
+                articuloRepository.updateUnidadesDisponiblesById(detalle.getIdarticulo(), ((articulo.getUnidadesdisponibles())-(detalle.getUnidadescompradas())));
             } catch (Exception e) {
                 return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
             }
