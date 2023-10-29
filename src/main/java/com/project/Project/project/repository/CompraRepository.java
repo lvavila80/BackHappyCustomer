@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
 
 
 @Repository
@@ -24,9 +25,6 @@ public interface CompraRepository extends JpaRepository<Compra, Integer> {
     @Query(value = "INSERT INTO bd.compra_proveedor (idproveedor, idcompra) VALUES (:idProveedor, :idCompra)", nativeQuery = true)
     void insertCompraProveedor(@Param("idProveedor") Integer idProveedor, @Param("idCompra") Integer idCompra);
 
-
-    @Modifying
-    @Query("UPDATE Compra c SET c.descripcionDevolucion = :descripcion, c.devuelto = :devuelto WHERE c.id = :id")
-    void updateDevolucionInfo(@Param("id") Integer id, @Param("descripcion") String descripcion, @Param("devuelto") Boolean devuelto);
+    Optional<Compra> findByValortotal(double valortotal);
 
 }
