@@ -42,14 +42,13 @@ public class DetalleVentaService {
             DetalleVenta detalleVenta = new DetalleVenta();
             detalleVenta.setIdventa(ventaId.intValue());
             detalleVenta.setIdcategoria(ventaArticulosDTO.getIdCategoria());
-            detalleVenta.setUnidadesvendidas(idArticulo);
+            detalleVenta.setUnidadesvendidas(ventaArticulosDTO.getUnidadesVendidas());
             detalleVenta.setIdarticulo(idArticulo);
 
             Articulo articulo = articuloService.findById(idArticulo);
             if (articulo != null) {
                 detalleVenta.setValorunidad(articulo.getValorunitario());
             }
-
             return detalleVentaRepository.save(detalleVenta);
         } catch (Exception e) {
             throw new RuntimeException("Error al guardar venta y relaciones: " + e.getMessage(), e);

@@ -62,7 +62,6 @@ public class VentaService {
                 }
             }
 
-// Manejar excepciones para cada solicitud de inserción
             try {
                 ventaRepository.insertVentaUsuario(savedVenta.getId(), ventaArticulosDTO.getIdUsuario());
             } catch (Exception e) {

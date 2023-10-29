@@ -6,13 +6,13 @@ public class VentaArticuloDTO {
     private List<ArticuloVentaDTO> articulosVenta;
     private int idUsuario;
     private int idCliente;
-    private int idCategoria; // Agregamos el atributo idCategoria
+    private int idCategoria;
 
     public VentaArticuloDTO(List<ArticuloVentaDTO> articulosVenta, int idUsuario, int idCliente, int idCategoria) {
         this.articulosVenta = articulosVenta;
         this.idUsuario = idUsuario;
         this.idCliente = idCliente;
-        this.idCategoria = idCategoria; // Inicializamos idCategoria
+        this.idCategoria = idCategoria;
     }
 
     public VentaArticuloDTO() {

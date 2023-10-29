@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/api/compras")
 public class CompraController {
@@ -19,7 +18,7 @@ public class CompraController {
     private CompraService compraService;
 
     @PostMapping("/registrarCompra")
-    public ResponseEntity<String> agregarCompra(@Valid @RequestBody CompraArticulosDTO compraArticulosDTO) {
+    public ResponseEntity<String> agregarCompra( @RequestBody CompraArticulosDTO compraArticulosDTO) {
         try {
             compraService.guardarCompraYRelaciones(compraArticulosDTO);
             return new ResponseEntity<>("Compra y artículo agregados exitosamente", HttpStatus.OK);
