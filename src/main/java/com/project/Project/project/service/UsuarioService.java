@@ -39,4 +39,22 @@ public class UsuarioService {
         return usuarioDAO;
     }
 
+    public UsuarioDAO insertarUsuario(Usuario usuario) {
+        try {
+            Usuario nuevoUsuario = usuarioRepository.save(usuario);
+            return convertToUsuarioDAO(nuevoUsuario);
+        } catch (Exception e) {
+            throw new RuntimeException("No se pudo insertar el usuario: " + e.getMessage(), e);
+        }
+    }
+
+    public boolean validarUsuario(String correo, String passwd) {
+        Optional<Usuario> usuarioOpt = usuarioRepository.findByCorreo(correo);
+        if (usuarioOpt.isPresent()) {
+            Usuario usuario = usuarioOpt.get();
+            return usuario.getPasswd().equals(passwd);
+        }
+        return false;
+    }
+
 }

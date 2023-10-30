@@ -4,21 +4,21 @@ package com.project.Project.project.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "proveedores")
+@Table(name = "proveedor")
 public class Proveedor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private int id;
+    private Integer id;
 
     @Column(name = "nombre")
     private String nombre;
 
     @Column(name = "identificacion")
-    private int identificacion;
+    private Integer identificacion;
 
     @Column(name = "telefono")
-    private int telefono;
+    private Integer telefono;
 
     @Column(name = "correo")
     private String correo;
@@ -27,14 +27,14 @@ public class Proveedor {
     public Proveedor() {
     }
 
-    public Proveedor(String nombre, int identificacion, int telefono, String correo) {
+    public Proveedor(String nombre, Integer identificacion, Integer telefono, String correo) {
         this.nombre = nombre;
         this.identificacion = identificacion;
         this.telefono = telefono;
         this.correo = correo;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -50,7 +50,7 @@ public class Proveedor {
         this.nombre = nombre;
     }
 
-    public int getIdentificacion() {
+    public Integer getIdentificacion() {
         return identificacion;
     }
 
@@ -58,7 +58,7 @@ public class Proveedor {
         this.identificacion = identificacion;
     }
 
-    public int getTelefono() {
+    public Integer getTelefono() {
         return telefono;
     }
 

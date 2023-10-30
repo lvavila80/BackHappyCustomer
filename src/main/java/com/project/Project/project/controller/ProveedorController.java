@@ -3,6 +3,7 @@ package com.project.Project.project.controller;
 import com.project.Project.project.model.Proveedor;
 import com.project.Project.project.repository.ProveedorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,37 +32,20 @@ public class ProveedorController {
         return proveedorRepository.findAll();
     }
 
-    @PostMapping("/create")
-    public Proveedor createProveedor(@RequestBody Proveedor proveedor) {
-        return proveedorRepository.save(proveedor);
-    }
+    @PostMapping("/createProveedor")
+    public ResponseEntity<?> createProveedor(@RequestBody Proveedor proveedor) {
+        
+        Proveedor existingProveedor = proveedorRepository.findByIdentificacion(proveedor.getIdentificacion());
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<Proveedor> updateProveedor(@PathVariable int id, @RequestBody Proveedor proveedorDetalles) {
-        Optional<Proveedor> proveedor = proveedorRepository.findById((long) id);
+        if (existingProveedor != null) {
 
-        if (proveedor.isPresent()) {
-            Proveedor proveedorExistente = proveedor.get();
-            proveedorExistente.setNombre(proveedorDetalles.getNombre());
-            proveedorExistente.setIdentificacion(proveedorDetalles.getIdentificacion());
-            proveedorExistente.setTelefono(proveedorDetalles.getTelefono());
-            proveedorExistente.setCorreo(proveedorDetalles.getCorreo());
-
-            return ResponseEntity.ok(proveedorRepository.save(proveedorExistente));
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("El proveedor ya se encuentra registrado.");
         } else {
-            return ResponseEntity.notFound().build();
+
+            Proveedor newProveedor = proveedorRepository.save(proveedor);
+            return ResponseEntity.status(HttpStatus.CREATED).body("OK");
         }
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteProveedor(@PathVariable int id) {
-        Optional<Proveedor> proveedor = proveedorRepository.findById((long) id);
-
-        if (proveedor.isPresent()) {
-            proveedorRepository.delete(proveedor.get());
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
 }

@@ -4,14 +4,14 @@ package com.project.Project.project.model;
 import java.util.Date;
 
 public class UsuarioDAO {
-    private int id;
+    private Integer id;
     private String correo;
-    private int cedula;
+    private Integer cedula;
     private String estado;
     private boolean cambiarClave;
     private Date fechaUltimoCambioClave;
 
-    public UsuarioDAO(int id, String correo, int cedula, String estado, boolean cambiarClave, Date fechaUltimoCambioClave) {
+    public UsuarioDAO(Integer id, String correo, Integer cedula, String estado, boolean cambiarClave, Date fechaUltimoCambioClave) {
         this.id = id;
         this.correo = correo;
         this.cedula = cedula;
@@ -23,7 +23,7 @@ public class UsuarioDAO {
     public UsuarioDAO() {
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -39,7 +39,7 @@ public class UsuarioDAO {
         this.correo = correo;
     }
 
-    public int getCedula() {
+    public Integer getCedula() {
         return cedula;
     }
 
@@ -71,5 +71,4 @@ public class UsuarioDAO {
         this.fechaUltimoCambioClave = fechaUltimoCambioClave;
     }
 
-    // Constructores, getters y setters
 }

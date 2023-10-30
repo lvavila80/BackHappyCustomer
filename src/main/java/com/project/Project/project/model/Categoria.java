@@ -13,20 +13,18 @@ public class Categoria {
     @Column(name = "id")
     private int id;
 
-    @Column(name = "nombreCategorias", length = 45)
+    @Column(name = "nombrecategoria", length = 45)
     private String nombreCategorias;
 
     // Constructor
     public Categoria() {
     }
 
-    // Constructor con parámetros
-    public Categoria(int id, String nombreCategorias) {
-        this.id = id;
-        this.nombreCategorias = nombreCategorias;
+
+    public Categoria(String nombreCategorias) {
+           this.nombreCategorias = nombreCategorias;
     }
 
-    // Getters y setters
     public int getId() {
         return id;
     }
