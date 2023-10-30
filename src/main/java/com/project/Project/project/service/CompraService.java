@@ -7,12 +7,15 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
-import static org.hibernate.query.sqm.tree.SqmNode.log;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CompraService {
@@ -73,9 +76,8 @@ public class CompraService {
     }
 
     @Transactional
-    public void actualizarDevolucion(Integer idCompra, String descripcion, Boolean devuelto) {
-        compraRepository.updateDevolucionInfo(idCompra, descripcion, devuelto);
-        detalleCompraService.reversarCompra(idCompra);
+    public ResponseEntity<String> actualizarDevolucion(Integer idCompra, String descripcion, ArrayList devuelto) {
+        return detalleCompraService.reversarCompra(idCompra, devuelto, descripcion);
     }
 
 }

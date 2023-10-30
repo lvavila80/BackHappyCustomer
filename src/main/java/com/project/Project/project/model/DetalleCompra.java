@@ -22,21 +22,40 @@ public class DetalleCompra {
     @Column(name = "valorunidad", length = 45)
     private double valorunidad;
 
-    public DetalleCompra(int idcompra, int idarticulo, int idcategoria, int unidadescompradas, double valorunidad) {
+    @Column(name = "estado", length = 45)
+    private String estado;
+
+    @Column(name = "detalle_devolucion", length = 45)
+    private String detalleDevolucion;
+
+
+    public DetalleCompra(int idcompra, int idarticulo, int idcategoria, int unidadescompradas, double valorunidad, String estado, String detalleDevolucion) {
         this.idcompra = idcompra;
         this.idarticulo = idarticulo;
         this.unidadescompradas = unidadescompradas;
         this.valorunidad = valorunidad;
+        this.estado = estado;
+        this.detalleDevolucion = detalleDevolucion;
     }
 
-    public DetalleCompra(int idcompra, int idarticulo, int unidadescompradas, double valorunidad) {
+    public DetalleCompra(int idcompra, int idarticulo, int unidadescompradas, double valorunidad, String estado, String detalleDevolucion) {
         this.idcompra = idcompra;
         this.idarticulo = idarticulo;
         this.unidadescompradas = unidadescompradas;
         this.valorunidad = valorunidad;
+        this.estado = estado;
+        this.detalleDevolucion = detalleDevolucion;
     }
 
     public DetalleCompra() {
+    }
+
+    public String getDetalleDevolucion() {
+        return detalleDevolucion;
+    }
+
+    public void setDetalleDevolucion(String detalleDevolucion) {
+        this.detalleDevolucion = detalleDevolucion;
     }
 
     public Integer getId() {
@@ -85,5 +104,13 @@ public class DetalleCompra {
 
     public void setValorunidad(double valorunidad) {
         this.valorunidad = valorunidad;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
 }
