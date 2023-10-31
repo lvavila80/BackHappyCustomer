@@ -4,7 +4,10 @@ public class ArticuloVentaDTO {
     private int articulo;
     private int unidadesVendidas;
 
-    public ArticuloVentaDTO(int articulo, int unidadesVendidas, int idCategoria) {
+    public ArticuloVentaDTO() {
+    }
+
+    public ArticuloVentaDTO(int articulo, int unidadesVendidas) {
         this.articulo = articulo;
         this.unidadesVendidas = unidadesVendidas;
     }
