@@ -1,6 +1,7 @@
 package com.project.Project.project.controller;
 
 import com.project.Project.project.model.CompraArticulosDTO;
+import com.project.Project.project.model.DevoUpdateDTO;
 import com.project.Project.project.service.CompraService;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -39,11 +40,4 @@ public class CompraController {
         }
     }
 
-    @Data
-    public static class DevoUpdateDTO {
-        private Integer idCompra;
-        private String descripcion;
-        @NotNull
-        private ArrayList devuelto;
-    }
 }
