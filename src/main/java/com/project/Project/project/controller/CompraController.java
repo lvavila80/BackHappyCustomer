@@ -28,7 +28,7 @@ public class CompraController {
             compraService.guardarCompraYRelaciones(compraArticulosDTO);
             return new ResponseEntity<>("Compra y artículo agregados exitosamente", HttpStatus.OK);
         } catch (RuntimeException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+               return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     @PostMapping("/devolucionCompra")
