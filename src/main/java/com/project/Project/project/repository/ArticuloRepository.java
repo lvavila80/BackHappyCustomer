@@ -1,5 +1,6 @@
 package com.project.Project.project.repository;
 import com.project.Project.project.model.Articulo;
+import com.project.Project.project.model.ArticuloCategoria;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -23,5 +24,8 @@ public interface ArticuloRepository extends JpaRepository<Articulo, Integer> {
     @Transactional
     @Query("UPDATE Articulo a SET a.unidadesdisponibles = :unidades WHERE a.id = :id")
     void updateUnidadesDisponiblesById(@Param("id") Integer id, @Param("unidades") int unidades);
+
+    @Query("SELECT ac FROM ArticuloCategoria ac WHERE ac.idarticulo = :idart")
+    Optional<ArticuloCategoria> selectCategoria(@Param("idart") Integer idart);
 
 }

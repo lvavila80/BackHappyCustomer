@@ -40,7 +40,6 @@ public class VentaService {
                 if (encontrado != null && encontrado.getUnidadesdisponibles() >= unidadesVendidas) {
                     articuloService.findByIdAndUpdateUnidadesDisponibles(encontrado.getId(),
                             (encontrado.getUnidadesdisponibles() - unidadesVendidas));
-
                     encontrado.getValorunitario();
                     valorTotal += (encontrado.getValorunitario() * unidadesVendidas);
                 } else {
@@ -74,12 +73,6 @@ public class VentaService {
                 throw new RuntimeException("Error al insertar en venta_cliente: " + e.getMessage(), e);
             }
 
-            try {
-                ventaRepository.insertVentaCategoria(savedVenta.getId(), ventaArticulosDTO.getIdCategoria());
-            } catch (Exception e) {
-                throw new RuntimeException("Error al insertar en venta_categoria: " + e.getMessage(), e);
-            }
-
         } catch (Exception e) {
             throw new RuntimeException("Error al guardar venta y relaciones: " + e.getMessage(), e);
         }
@@ -87,7 +80,6 @@ public class VentaService {
 
     public boolean isValidVentaData(VentaArticuloDTO ventaArticuloDTO) {
         List<ArticuloVentaDTO> articulosVenta = ventaArticuloDTO.getArticulosVenta();
-
         if (articulosVenta == null || articulosVenta.isEmpty()) {
             return false;
         }
@@ -97,7 +89,6 @@ public class VentaService {
                 return false;
             }
         }
-
         return true;
     }
 }

@@ -18,8 +18,4 @@ public interface VentaRepository extends JpaRepository<Venta, Long> {
     @Modifying
     @Query(value = "INSERT INTO venta_cliente (idventa, idcliente) VALUES (:idVenta, :idCliente)", nativeQuery = true)
     void insertVentaCliente(@Param("idVenta") int idVenta, @Param("idCliente") int idCliente);
-
-    @Modifying
-    @Query(value = "INSERT INTO venta_categoria (idventa, idcategoria) VALUES (:idVenta, :idCategoria)", nativeQuery = true)
-    void insertVentaCategoria(@Param("idVenta") int idVenta, @Param("idCategoria") int idCategoria);
 }
