@@ -1,12 +1,21 @@
 package com.project.Project.project.service;
 import com.project.Project.project.model.*;
 import com.project.Project.project.model.ArticulosCompraDTO;
+import com.project.Project.project.repository.CategoriaRepository;
 import com.project.Project.project.repository.CompraRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import java.util.Optional;
 
@@ -21,13 +30,22 @@ public class CompraService {
     @Autowired
     private DetalleCompraService detalleCompraService;
 
+    @Autowired
+    private CategoriaRepository categoriaRepository;
+
+
     @PersistenceContext
     private EntityManager entityManager;
 
     @Transactional
     public void guardarCompraYRelaciones(CompraArticulosDTO compraArticulosDTO) {
         Double valorTotal = 0.00;
+        List<Categoria> categorias;
+        categorias = categoriaRepository.findAll();
         for(ArticulosCompraDTO articuloCompra : compraArticulosDTO.getArticulosCompra()) {
+            if (categorias.stream().noneMatch(categoria -> categoria.getId() == articuloCompra.getIdCategoria())) {
+                throw new RuntimeException("Error, no existe la categoría con el id :"+articuloCompra.getIdCategoria());
+            }
             valorTotal += (articuloCompra.getValorUnidad()*articuloCompra.getUnidadesCompradas());
         }
 
@@ -65,9 +83,8 @@ public class CompraService {
     }
 
     @Transactional
-    public void actualizarDevolucion(Integer idCompra, String descripcion, Boolean devuelto) {
-        compraRepository.updateDevolucionInfo(idCompra, descripcion, devuelto);
-        detalleCompraService.reversarCompra(idCompra);
+    public ResponseEntity<String> actualizarDevolucion(Integer idCompra, String descripcion, ArrayList devuelto) {
+        return detalleCompraService.reversarCompra(idCompra, devuelto, descripcion);
     }
 
 
