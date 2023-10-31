@@ -1,6 +1,7 @@
 package com.project.Project.project.controller;
 
 import com.project.Project.project.model.CompraArticulosDTO;
+import com.project.Project.project.model.DevoUpdateDTO;
 import com.project.Project.project.service.CompraService;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -39,12 +40,4 @@ public class CompraController {
         }
     }
 
-    // Añadir una nueva clase para manejar el cuerpo de la solicitud POST:
-    @Data  // Importante para Lombok (para generar getters, setters, etc.)
-    public static class DevoUpdateDTO {
-        private Integer idCompra;
-        private String descripcion;
-        @NotNull
-        private ArrayList devuelto;
-    }
 }
