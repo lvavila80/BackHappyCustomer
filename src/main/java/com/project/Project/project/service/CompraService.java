@@ -17,8 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import java.util.Optional;
-
 @Service
 public class CompraService {
 
@@ -48,7 +46,6 @@ public class CompraService {
             }
             valorTotal += (articuloCompra.getValorUnidad()*articuloCompra.getUnidadesCompradas());
         }
-
         Compra compra = new Compra(valorTotal);
         Compra savedCompra = compraRepository.save(compra);
         if (savedCompra == null || savedCompra.getId() == null) {
@@ -75,10 +72,6 @@ public class CompraService {
         } catch (Exception e) {
             throw new RuntimeException("Error al insertar en bd.compra_usuario: " + e.getMessage());
         }
-        Optional<Compra> existingCompra = compraRepository.findByValortotal(valorTotal);
-        if (existingCompra.isPresent()) {
-            throw new RuntimeException("La compra ya está registrada en la base de datos");
-        }
 
     }
 
@@ -86,8 +79,5 @@ public class CompraService {
     public ResponseEntity<String> actualizarDevolucion(Integer idCompra, String descripcion, ArrayList devuelto) {
         return detalleCompraService.reversarCompra(idCompra, devuelto, descripcion);
     }
-
-
-
 
 }

@@ -12,8 +12,6 @@ import java.util.Optional;
 @Repository
 public interface CompraRepository extends JpaRepository<Compra, Integer> {
 
-    Optional<Compra> findByValortotal(Double valorTotal);
-
 
     @Modifying
     @Query(value = "INSERT INTO bd.compra_usuario (idcompra, idusuario) VALUES (:idCompra, :idUsuario)", nativeQuery = true)
@@ -28,14 +26,5 @@ public interface CompraRepository extends JpaRepository<Compra, Integer> {
     void insertCompraProveedor(@Param("idProveedor") Integer idProveedor, @Param("idCompra") Integer idCompra);
 
     Optional<Compra> findByValortotal(double valortotal);
-
-    Optional<Compra> findByValortotal(double valortotal);
-
-
-
-
-
-
-
 
 }

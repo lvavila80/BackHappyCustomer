@@ -50,7 +50,6 @@ public class DetalleCompraService {
     public ResponseEntity<String> reversarCompra(int idcompra, ArrayList array,String detalleDevolucion){
         List<DetalleCompra> detalles = detalleCompraRepository.findByIdcompra(idcompra);
         for (DetalleCompra detalle : detalles) {
-            System.out.println();
             try {
                 if(detalle.getEstado().equals("devuelto") && array.contains(detalle.getIdarticulo())){
                     return new ResponseEntity<>("El articulo " + detalle.getIdarticulo() + " ya se encuentra devuelto", HttpStatus.INTERNAL_SERVER_ERROR);
