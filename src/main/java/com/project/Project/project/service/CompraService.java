@@ -30,6 +30,7 @@ public class CompraService {
         for(ArticulosCompraDTO articuloCompra : compraArticulosDTO.getArticulosCompra()) {
             valorTotal += (articuloCompra.getValorUnidad()*articuloCompra.getUnidadesCompradas());
         }
+
         Compra compra = new Compra(valorTotal);
         Compra savedCompra = compraRepository.save(compra);
         if (savedCompra == null || savedCompra.getId() == null) {
