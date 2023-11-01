@@ -1,1 +1,4 @@
-Error en VentaController - createVenta - 2023-10-31T20:37:34.101752300 - com.project.Project.project.model.VentaArticuloDTO@212158f7
+(Ubicacion: Error en VentaController - createVenta; Error: Error al guardar venta y relaciones: No se encontró el artículo con ID 22; Fecha del error: 2023-10-31T20:52:34.883056300),
+(Ubicacion: Error en VentaController - createVenta; Error: Error al guardar venta y relaciones: No se encontró el artículo con ID 22; Fecha del error: 2023-10-31T20:52:57.746400400),
+(Ubicacion: Error en VentaController - createVenta; Error: Error al guardar venta y relaciones: No se encontró el artículo con ID 22; Fecha del error: 2023-10-31T21:06:00.324130900),
+(Ubicacion: Error en VentaController - createVenta; Error: Error al guardar venta y relaciones: No se encontró el artículo con ID 22; Fecha del error: 2023-10-31T21:07:07.596479900),

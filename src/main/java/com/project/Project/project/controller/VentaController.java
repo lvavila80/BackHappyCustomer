@@ -25,7 +25,7 @@ public class VentaController {
             ventaService.createVenta(ventaArticuloDTO);
             return new ResponseEntity<>("Venta registrada exitosamente", HttpStatus.OK);
         } catch (Exception e) {
-            errorLoggingService.logError("Error en VentaController - createVenta", e.getMessage(), ventaArticuloDTO.toString());
+            errorLoggingService.logError("Error en VentaController - createVenta", e, ventaArticuloDTO.toString());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al crear la venta: " + e.getMessage());
         }
     }

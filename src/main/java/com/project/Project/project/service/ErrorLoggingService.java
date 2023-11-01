@@ -1,5 +1,5 @@
 package com.project.Project.project.service;
 
 public interface ErrorLoggingService {
-    void logError(String errorLocation, String ex, String usedData);
+    void logError(String errorLocation, Exception ex, String usedData);
 }

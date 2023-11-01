@@ -9,11 +9,12 @@ import java.time.LocalDateTime;
 
 @Service
 public class ErrorLoggingServiceImpl implements ErrorLoggingService {
-
     @Override
-    public void logError(String errorLocation, String ex, String usedData) {
+    public void logError(String errorLocation, Exception ex, String usedData) {
         try (FileWriter fileWriter = new FileWriter("errors.txt", true)) {
-            fileWriter.write(errorLocation + " - " + LocalDateTime.now() + " - " + usedData + "\n");
+            String logEntry = String.format("(Ubicacion: %s; Error: %s; Fecha del error: %s),\n",
+                    errorLocation, ex.getMessage(), LocalDateTime.now());
+            fileWriter.write(logEntry);
         } catch (IOException e) {
             e.printStackTrace();
         }
