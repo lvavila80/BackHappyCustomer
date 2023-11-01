@@ -3,8 +3,6 @@ package com.project.Project.project.controller;
 import com.project.Project.project.model.CompraArticulosDTO;
 import com.project.Project.project.model.DevoUpdateDTO;
 import com.project.Project.project.service.CompraService;
-import jakarta.validation.constraints.NotNull;
-import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,8 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/api/compras")
 public class CompraController {
