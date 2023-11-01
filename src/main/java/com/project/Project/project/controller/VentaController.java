@@ -37,6 +37,7 @@ public class VentaController {
             ventaService.revertirVenta(reversionVentaDTO.getIdVenta(), reversionVentaDTO.getMotivoReversion(), reversionVentaDTO.getDevuelto());
             return new ResponseEntity<>("Articulos devueltos exitosamente", HttpStatus.OK);
         } catch (Exception e) {
+            errorLoggingService.logError("Error en VentaController - devolucionVenta", e, reversionVentaDTO.toString());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 

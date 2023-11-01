@@ -1,8 +1,10 @@
 package com.project.Project.project.service;
 import com.project.Project.project.model.*;
 import com.project.Project.project.model.ArticulosCompraDTO;
+import com.project.Project.project.repository.ArticuloRepository;
 import com.project.Project.project.repository.CategoriaRepository;
 import com.project.Project.project.repository.CompraRepository;
+import com.project.Project.project.repository.DetalleCompraRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
@@ -31,6 +33,11 @@ public class CompraService {
     @Autowired
     private CategoriaRepository categoriaRepository;
 
+    @Autowired
+    private DetalleCompraRepository detalleCompraRepository;
+
+    @Autowired
+    private ArticuloRepository articuloRepository;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -76,11 +83,27 @@ public class CompraService {
     }
 
     @Transactional
-    public void actualizarDevolucion(Integer idCompra, String descripcion, ArrayList devuelto) {
-        try{
-            detalleCompraService.reversarCompra(idCompra, devuelto, descripcion);
-        }catch(Exception e){
-            throw new RuntimeException(e.getMessage());
+    public void actualizarDevolucion(Integer idCompra, String detalleDevolucion, ArrayList array) {
+        List<DetalleCompra> detalles = detalleCompraRepository.findByIdcompra(idCompra);
+        Boolean encontrado = false;
+        for (DetalleCompra detalle : detalles) {
+            try {
+                if( array.contains(detalle.getIdarticulo()) && detalle.getEstado() != null && detalle.getEstado().equals("devuelto") ){
+                    throw new RuntimeException("El articulo " + detalle.getIdarticulo() + " ya se encuentra devuelto.");
+                }else if(array.contains(detalle.getIdarticulo()) && (detalle.getEstado() == null || !detalle.getEstado().equals("devuelto"))) {
+                    detalle.setEstado("devuelto");
+                    detalle.setDetalleDevolucion(detalleDevolucion);
+                    detalleCompraRepository.save(detalle);
+                    Articulo articulo = articuloRepository.findById(detalle.getIdarticulo()).get();
+                    int nuevasUnidades = ((articulo.getUnidadesdisponibles())-(detalle.getUnidadescompradas()));
+                    articuloRepository.updateUnidadesDisponiblesById(detalle.getIdarticulo(), nuevasUnidades);
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Error al reversar venta. " +e.getMessage());
+            }
+        }
+        if(!encontrado){
+            throw new RuntimeException("Error, el id del articulo no corresponde a los articulos de esta compra. " );
         }
     }
 

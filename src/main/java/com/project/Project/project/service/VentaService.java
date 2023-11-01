@@ -106,6 +106,7 @@ public class VentaService {
     @Transactional
     public void revertirVenta(Long idVenta, String detalleDevolucion, ArrayList array) {
         List<DetalleVenta> detalles = detalleVentaRepository.findByIdventa(idVenta);
+        Boolean encontrado = false;
         for (DetalleVenta detalle : detalles) {
             try {
                 if( array.contains(detalle.getIdarticulo()) && detalle.getEstado() != null && detalle.getEstado().equals("devuelto") ){
@@ -117,10 +118,15 @@ public class VentaService {
                     Articulo articulo = articuloRepository.findById(detalle.getIdarticulo()).get();
                     int nuevasUnidades = ((articulo.getUnidadesdisponibles())+(detalle.getUnidadesvendidas()));
                     articuloRepository.updateUnidadesDisponiblesById(detalle.getIdarticulo(), nuevasUnidades);
+                    encontrado = true;
                 }
+
             } catch (Exception e) {
-                throw new RuntimeException("Error al reversar venta. " );
+                throw new RuntimeException("Error al reversar venta. " +e.getMessage());
             }
+        }
+        if(!encontrado){
+            throw new RuntimeException("Error, el id del articulo no corresponde a los articulos de esta venta. " );
         }
     }
 }

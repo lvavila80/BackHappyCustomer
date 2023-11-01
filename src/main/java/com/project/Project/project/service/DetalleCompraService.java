@@ -46,24 +46,4 @@ public class DetalleCompraService {
             throw new RuntimeException("Error al guardar compra y relaciones: " + e.getMessage(), e);
         }
     }
-
-    public void reversarCompra(int idcompra, ArrayList array,String detalleDevolucion){
-        List<DetalleCompra> detalles = detalleCompraRepository.findByIdcompra(idcompra);
-        for (DetalleCompra detalle : detalles) {
-            try {
-                if( array.contains(detalle.getIdarticulo()) && detalle.getEstado() != null && detalle.getEstado().equals("devuelto") ){
-                    throw new RuntimeException("El articulo" + detalle.getIdarticulo() + " ya se encuentra devuelto.");
-                }else if(array.contains(detalle.getIdarticulo()) && (detalle.getEstado() == null || !detalle.getEstado().equals("devuelto"))) {
-                    detalle.setEstado("devuelto");
-                    detalle.setDetalleDevolucion(detalleDevolucion);
-                    detalleCompraRepository.save(detalle);
-                    Articulo articulo = articuloRepository.findById(detalle.getIdarticulo()).get();
-                    int nuevasUnidades = ((articulo.getUnidadesdisponibles())-(detalle.getUnidadescompradas()));
-                    articuloRepository.updateUnidadesDisponiblesById(detalle.getIdarticulo(), nuevasUnidades);
-                }
-            } catch (Exception e) {
-                throw new RuntimeException("Error interno del servidor.");
-            }
-        }
-    }
 }
