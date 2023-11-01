@@ -1,11 +1,16 @@
 package com.project.Project.project.service;
 
 import com.project.Project.project.model.*;
+import com.project.Project.project.repository.ArticuloRepository;
+import com.project.Project.project.repository.DetalleVentaRepository;
 import com.project.Project.project.repository.VentaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -20,6 +25,12 @@ public class VentaService {
 
     @Autowired
     private DetalleVentaService detalleVentaService;
+
+    @Autowired
+    private DetalleVentaRepository detalleVentaRepository;
+
+    @Autowired
+    private ArticuloRepository articuloRepository;
 
     @Transactional
     public void createVenta(VentaArticuloDTO ventaArticulosDTO) {
@@ -90,5 +101,26 @@ public class VentaService {
             }
         }
         return true;
+    }
+
+    @Transactional
+    public void revertirVenta(Long idVenta, String detalleDevolucion, ArrayList array) {
+        List<DetalleVenta> detalles = detalleVentaRepository.findByIdventa(idVenta);
+        for (DetalleVenta detalle : detalles) {
+            try {
+                if( array.contains(detalle.getIdarticulo()) && detalle.getEstado() != null && detalle.getEstado().equals("devuelto") ){
+                    throw new RuntimeException("El articulo " + detalle.getIdarticulo() + " ya se encuentra devuelto");
+                }else if(array.contains(detalle.getIdarticulo()) && (detalle.getEstado() == null || !detalle.getEstado().equals("devuelto"))) {
+                    detalle.setEstado("devuelto");
+                    detalle.setDetalleDevolucion(detalleDevolucion);
+                    detalleVentaRepository.save(detalle);
+                    Articulo articulo = articuloRepository.findById(detalle.getIdarticulo()).get();
+                    int nuevasUnidades = ((articulo.getUnidadesdisponibles())+(detalle.getUnidadesvendidas()));
+                    articuloRepository.updateUnidadesDisponiblesById(detalle.getIdarticulo(), nuevasUnidades);
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Error al reversar venta. " );
+            }
+        }
     }
 }

@@ -27,10 +27,8 @@ public class DetalleVenta {
 
     @Column(name = "estado", length = 45)
     private String estado;
-
     @Column(name = "detalle_devolucion", length = 45)
     private String detalleDevolucion;
-
 
     public DetalleVenta() {
     }
@@ -43,6 +41,23 @@ public class DetalleVenta {
         this.valorunidad = valorunidad;
         this.idcategoria = idcategoria;
         this.estado = estado;
+        this.detalleDevolucion = detalleDevolucion;
+    }
+
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public String getDetalleDevolucion() {
+        return detalleDevolucion;
+    }
+
+    public void setDetalleDevolucion(String detalleDevolucion) {
         this.detalleDevolucion = detalleDevolucion;
     }
 
