@@ -32,6 +32,7 @@ public class DetalleCompra {
     public DetalleCompra(int idcompra, int idarticulo, int idcategoria, int unidadescompradas, double valorunidad, String estado, String detalleDevolucion) {
         this.idcompra = idcompra;
         this.idarticulo = idarticulo;
+        this.idcategoria = idcategoria;
         this.unidadescompradas = unidadescompradas;
         this.valorunidad = valorunidad;
         this.estado = estado;
