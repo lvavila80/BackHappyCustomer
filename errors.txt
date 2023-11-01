@@ -1,0 +1,1 @@
+Error en VentaController - createVenta - 2023-10-31T20:37:34.101752300 - com.project.Project.project.model.VentaArticuloDTO@212158f7
