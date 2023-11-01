@@ -111,6 +111,7 @@ public class CompraService {
                     Articulo articulo = articuloRepository.findById(detalle.getIdarticulo()).get();
                     int nuevasUnidades = ((articulo.getUnidadesdisponibles())-(detalle.getUnidadescompradas()));
                     articuloRepository.updateUnidadesDisponiblesById(detalle.getIdarticulo(), nuevasUnidades);
+                    encontrado = true;
                 }
             } catch (Exception e) {
                 throw new RuntimeException("Error al reversar venta. " +e.getMessage());
