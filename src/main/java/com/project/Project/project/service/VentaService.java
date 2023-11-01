@@ -1,9 +1,7 @@
 package com.project.Project.project.service;
 
 import com.project.Project.project.model.*;
-import com.project.Project.project.repository.ArticuloRepository;
-import com.project.Project.project.repository.DetalleVentaRepository;
-import com.project.Project.project.repository.VentaRepository;
+import com.project.Project.project.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +11,7 @@ import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class VentaService {
@@ -32,9 +31,26 @@ public class VentaService {
     @Autowired
     private ArticuloRepository articuloRepository;
 
+    @Autowired
+    private ClienteRepository clienteRepository;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
     @Transactional
     public void createVenta(VentaArticuloDTO ventaArticulosDTO) {
         try {
+
+            Optional<Cliente> cliente = clienteRepository.findById((long) ventaArticulosDTO.getIdCliente());
+            if(cliente.isEmpty()){
+                throw new RuntimeException("El cliente no se encuentra registrado en el sistema.");
+            }
+
+            Optional<Usuario> usuario = usuarioRepository.findById((ventaArticulosDTO.getIdUsuario()));
+            if(usuario.isEmpty()){
+                throw new RuntimeException("El usuario no se encuentra autorizado para realizar esta operación, o no existe en el sistema.");
+            }
+
             Venta venta = new Venta();
             Double valorTotal = 0.00;
 
@@ -106,6 +122,9 @@ public class VentaService {
     @Transactional
     public void revertirVenta(Long idVenta, String detalleDevolucion, ArrayList array) {
         List<DetalleVenta> detalles = detalleVentaRepository.findByIdventa(idVenta);
+        if(detalles.isEmpty()){
+            throw new RuntimeException("Error, No existe una Venta con este id. " );
+        }
         Boolean encontrado = false;
         for (DetalleVenta detalle : detalles) {
             try {

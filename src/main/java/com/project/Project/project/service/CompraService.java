@@ -1,10 +1,7 @@
 package com.project.Project.project.service;
 import com.project.Project.project.model.*;
 import com.project.Project.project.model.ArticulosCompraDTO;
-import com.project.Project.project.repository.ArticuloRepository;
-import com.project.Project.project.repository.CategoriaRepository;
-import com.project.Project.project.repository.CompraRepository;
-import com.project.Project.project.repository.DetalleCompraRepository;
+import com.project.Project.project.repository.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
@@ -39,11 +36,25 @@ public class CompraService {
     @Autowired
     private ArticuloRepository articuloRepository;
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    @Autowired
+    private ProveedorRepository proveedorRepository;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     @Transactional
     public void guardarCompraYRelaciones(CompraArticulosDTO compraArticulosDTO) {
+
+
+        Optional<Proveedor> proveedor = proveedorRepository.findById((long) compraArticulosDTO.getIdProveedor());
+        if(proveedor.isEmpty()){
+            throw new RuntimeException("El cliente no se encuentra registrado en el sistema.");
+        }
+
+        Optional<Usuario> usuario = usuarioRepository.findById((compraArticulosDTO.getIdUsuario()));
+        if(usuario.isEmpty()){
+            throw new RuntimeException("El usuario no se encuentra autorizado para realizar esta operación, o no existe en el sistema.");
+        }
         Double valorTotal = 0.00;
         List<Categoria> categorias;
         categorias = categoriaRepository.findAll();
@@ -85,6 +96,9 @@ public class CompraService {
     @Transactional
     public void actualizarDevolucion(Integer idCompra, String detalleDevolucion, ArrayList array) {
         List<DetalleCompra> detalles = detalleCompraRepository.findByIdcompra(idCompra);
+        if(detalles.isEmpty()){
+            throw new RuntimeException("Error, No existe una compra con este id. " );
+        }
         Boolean encontrado = false;
         for (DetalleCompra detalle : detalles) {
             try {
