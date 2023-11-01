@@ -8,68 +8,93 @@ public class DetalleVenta {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int id;
 
     @Column(name = "idventa", nullable = false)
-    private Long idVenta;
+    private int idventa;
 
     @Column(name = "idarticulo", nullable = false)
-    private Long idArticulo;
+    private int idarticulo;
 
     @Column(name = "unidadesvendidas", nullable = false)
-    private Long unidadesVendidas;
+    private int unidadesvendidas;
 
     @Column(name = "valorunidad", nullable = false)
-    private Double valorUnidad;
+    private Double valorunidad;
 
     @Column(name = "idcategoria", nullable = false)
-    private Long idCategoria;
+    private int idcategoria;
 
-    public Long getId() {
+    @Column(name = "estado", length = 45)
+    private String estado;
+    @Column(name = "detalle_devolucion", length = 45)
+    private String detalleDevolucion;
+
+    public DetalleVenta() {
+    }
+
+    public DetalleVenta(int id, int idventa, int idarticulo, int unidadesvendidas, Double valorunidad, int idcategoria, String estado, String detalleDevolucion, Venta venta) {
+        this.id = id;
+        this.idventa = idventa;
+        this.idarticulo = idarticulo;
+        this.unidadesvendidas = unidadesvendidas;
+        this.valorunidad = valorunidad;
+        this.idcategoria = idcategoria;
+        this.estado = estado;
+        this.detalleDevolucion = detalleDevolucion;
+    }
+
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public String getDetalleDevolucion() {
+        return detalleDevolucion;
+    }
+
+    public void setDetalleDevolucion(String detalleDevolucion) {
+        this.detalleDevolucion = detalleDevolucion;
+    }
+
+    public int getId() {
         return id;
     }
-
-    public void setId(Long id) {
+    public void setId(int id) {
         this.id = id;
     }
-
-    public Long getIdVenta() {
-        return idVenta;
+    public int getIdventa() {
+        return idventa;
     }
-
-    public void setIdVenta(Long idVenta) {
-        this.idVenta = idVenta;
+    public void setIdventa(int idventa) {
+        this.idventa = idventa;
     }
-
-    public Long getIdArticulo() {
-        return idArticulo;
+    public int getIdarticulo() {
+        return idarticulo;
     }
-
-    public void setIdArticulo(Long idArticulo) {
-        this.idArticulo = idArticulo;
+    public void setIdarticulo(int idarticulo) {
+        this.idarticulo = idarticulo;
     }
-
-    public Long getUnidadesVendidas() {
-        return unidadesVendidas;
+    public int getUnidadesvendidas() {
+        return unidadesvendidas;
     }
-
-    public void setUnidadesVendidas(Long unidadesVendidas) {
-        this.unidadesVendidas = unidadesVendidas;
+    public void setUnidadesvendidas(int unidadesvendidas) {
+        this.unidadesvendidas = unidadesvendidas;
     }
-
-    public Double getValorUnidad() {
-        return valorUnidad;
+    public Double getValorunidad() {
+        return valorunidad;
     }
-
-    public void setValorUnidad(Double valorUnidad) {
-        this.valorUnidad = valorUnidad;
+    public void setValorunidad(Double valorunidad) {
+        this.valorunidad = valorunidad;
     }
-
-    public Long getIdCategoria() {
-        return idCategoria;
+    public int getIdcategoria() {
+        return idcategoria;
     }
-
-    public void setIdCategoria(Long idCategoria) {
-        this.idCategoria = idCategoria;
+    public void setIdcategoria(int idcategoria) {
+        this.idcategoria = idcategoria;
     }
 }

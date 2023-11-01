@@ -51,20 +51,18 @@ public class DetalleCompraService {
         List<DetalleCompra> detalles = detalleCompraRepository.findByIdcompra(idcompra);
         for (DetalleCompra detalle : detalles) {
             try {
-                if(detalle.getEstado().equals("devuelto") && array.contains(detalle.getIdarticulo())){
+                if( array.contains(detalle.getIdarticulo()) && detalle.getEstado() != null && detalle.getEstado().equals("devuelto") ){
                     return new ResponseEntity<>("El articulo " + detalle.getIdarticulo() + " ya se encuentra devuelto", HttpStatus.INTERNAL_SERVER_ERROR);
-                }else if(array.contains(detalle.getIdarticulo()) && !detalle.getEstado().equals("devuelto")) {
+                }else if(array.contains(detalle.getIdarticulo()) && (detalle.getEstado() == null || !detalle.getEstado().equals("devuelto"))) {
                     detalle.setEstado("devuelto");
                     detalle.setDetalleDevolucion(detalleDevolucion);
                     detalleCompraRepository.save(detalle);
                     Articulo articulo = articuloRepository.findById(detalle.getIdarticulo()).get();
                     int nuevasUnidades = ((articulo.getUnidadesdisponibles())-(detalle.getUnidadescompradas()));
                     articuloRepository.updateUnidadesDisponiblesById(detalle.getIdarticulo(), nuevasUnidades);
-                }else{
-                    return new ResponseEntity<>("error", HttpStatus.INTERNAL_SERVER_ERROR);
                 }
             } catch (Exception e) {
-                return new ResponseEntity<>("Error interno del servidor", HttpStatus.INTERNAL_SERVER_ERROR);
+                return new ResponseEntity<>(e.getMessage() +"Error interno del servidor", HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
         return new ResponseEntity<>("Compra y artículo agregados exitosamente", HttpStatus.OK);
