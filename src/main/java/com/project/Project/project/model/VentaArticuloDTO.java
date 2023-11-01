@@ -1,14 +1,19 @@
 package com.project.Project.project.model;
 
-import jakarta.persistence.Column;
+import jakarta.validation.constraints.*;
 
 import java.util.List;
 
 public class VentaArticuloDTO {
-    private List<ArticuloVentaDTO> articulosVenta;
-    private int idUsuario;
-    private int idCliente;
 
+    @NotEmpty(message = "La lista de artículos de venta no puede estar vacía.")
+    private List<ArticuloVentaDTO> articulosVenta;
+
+    @NotNull(message = "El ID del usuario no puede ser nulo.")
+    private int idUsuario;
+
+    @NotNull(message = "El ID del cliente no puede ser nulo.")
+    private int idCliente;
 
     public VentaArticuloDTO(List<ArticuloVentaDTO> articulosVenta, int idUsuario, int idCliente) {
         this.articulosVenta = articulosVenta;
@@ -18,6 +23,7 @@ public class VentaArticuloDTO {
 
     public VentaArticuloDTO() {
     }
+
     public int getIdUsuario() {
         return idUsuario;
     }

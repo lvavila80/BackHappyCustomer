@@ -1,36 +1,57 @@
 package com.project.Project.project.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 
 @Entity
 @Table(name = "articulos")
-
 public class Articulo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @NotBlank(message = "El nombre del artículo no puede estar vacío.")
     private String nombrearticulo;
+
+    @NotBlank(message = "La marca no puede estar vacía.")
     private String marca;
+
+    @NotBlank(message = "El modelo no puede estar vacío.")
     private String modelo;
+
+    @NotBlank(message = "El color no puede estar vacío.")
     private String color;
+
+    @NotBlank(message = "La unidad de medida no puede estar vacía.")
     private String unidaddemedida;
 
+    @Min(value = 0, message = "Las unidades disponibles no pueden ser negativas.")
     private int unidadesdisponibles;
+
+    @PositiveOrZero(message = "El valor unitario no puede ser negativo.")
     private double valorunitario;
 
     public Articulo() {
     }
 
-    public Articulo(String nombrearticulo, String marca, String modelo, String color, String unidaddemedida) {
+    public Articulo(int id, String nombrearticulo, String marca, String modelo, String color, String unidaddemedida, int unidadesdisponibles, double valorunitario) {
+        this.id = id;
         this.nombrearticulo = nombrearticulo;
         this.marca = marca;
         this.modelo = modelo;
         this.color = color;
         this.unidaddemedida = unidaddemedida;
-        this.unidadesdisponibles = 0;
-        this.valorunitario = 0;
+        this.unidadesdisponibles = unidadesdisponibles;
+        this.valorunitario = valorunitario;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getNombrearticulo() {
@@ -83,14 +104,6 @@ public class Articulo {
 
     public double getValorunitario() {
         return valorunitario;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public void setValorunitario(double valorunitario) {

@@ -1,8 +1,12 @@
 package com.project.Project.project.model;
-
+import jakarta.validation.constraints.*;
 public class ArticuloUpdateValorDTO {
+
     private Integer id;
+
+    @PositiveOrZero(message = "El valor unitario no puede ser negativo.")
     private double valorunitario;
+
 
     public ArticuloUpdateValorDTO() {
     }

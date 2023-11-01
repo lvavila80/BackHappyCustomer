@@ -3,6 +3,7 @@ package com.project.Project.project.controller;
 import com.project.Project.project.model.CompraArticulosDTO;
 import com.project.Project.project.model.DevoUpdateDTO;
 import com.project.Project.project.service.CompraService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ public class CompraController {
     private CompraService compraService;
 
     @PostMapping("/registrarCompra")
-    public ResponseEntity<String> agregarCompra( @RequestBody CompraArticulosDTO compraArticulosDTO) {
+    public ResponseEntity<String> agregarCompra(@Valid @RequestBody CompraArticulosDTO compraArticulosDTO) {
         try {
             compraService.guardarCompraYRelaciones(compraArticulosDTO);
             return new ResponseEntity<>("Compra y artículo agregados exitosamente", HttpStatus.OK);
@@ -28,7 +29,7 @@ public class CompraController {
         }
     }
     @PostMapping("/devolucionCompra")
-    public ResponseEntity<String> actualizarDevolucion(@RequestBody DevoUpdateDTO devoUpdateDTO) {
+    public ResponseEntity<String> actualizarDevolucion(@Valid @RequestBody DevoUpdateDTO devoUpdateDTO) {
         try {
             compraService.actualizarDevolucion(devoUpdateDTO.getIdCompra(), devoUpdateDTO.getDescripcion(), devoUpdateDTO.getDevuelto());
             return new ResponseEntity<>("Devolución exitosa", HttpStatus.OK);
