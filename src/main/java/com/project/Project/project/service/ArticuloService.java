@@ -58,14 +58,22 @@ public class ArticuloService {
         }
     }
     public boolean updateValorUnitario(Integer id, double valorunitario) {
-        Optional<Articulo> articuloOptional = articuloRepository.findById(id);
-        if (articuloOptional.isPresent()) {
-            Articulo articulo = articuloOptional.get();
-            articulo.setValorunitario(valorunitario);
-            articuloRepository.save(articulo);
-            return true;
+        try{
+            Optional<Articulo> articuloOptional = articuloRepository.findById(id);
+            if (articuloOptional.isPresent()) {
+                Articulo articulo = articuloOptional.get();
+                articulo.setValorunitario(valorunitario);
+                try{
+                    articuloRepository.save(articulo);
+                    return true;
+                }catch(Exception e){
+                    throw new RuntimeException("Error,interno al guardar el articulo ");
+                }
+            }
+            return false;
+        }catch (Exception e){
+            throw new RuntimeException("Error,el articulo no existe: ");
         }
-        return false;
     }
 
     @Transactional

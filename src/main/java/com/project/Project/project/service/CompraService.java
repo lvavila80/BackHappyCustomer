@@ -76,8 +76,12 @@ public class CompraService {
     }
 
     @Transactional
-    public ResponseEntity<String> actualizarDevolucion(Integer idCompra, String descripcion, ArrayList devuelto) {
-        return detalleCompraService.reversarCompra(idCompra, devuelto, descripcion);
+    public void actualizarDevolucion(Integer idCompra, String descripcion, ArrayList devuelto) {
+        try{
+            detalleCompraService.reversarCompra(idCompra, devuelto, descripcion);
+        }catch(Exception e){
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
 }

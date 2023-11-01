@@ -2,6 +2,7 @@ package com.project.Project.project.controller;
 
 import com.project.Project.project.model.ReversionVentaDTO;
 import com.project.Project.project.model.VentaArticuloDTO;
+import com.project.Project.project.service.ErrorLoggingService;
 import com.project.Project.project.service.VentaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,12 +16,16 @@ public class VentaController {
     @Autowired
     private VentaService ventaService;
 
+    @Autowired
+    private ErrorLoggingService errorLoggingService;
+
     @PostMapping("/nuevaVenta")
     public ResponseEntity<Object> createVenta(@RequestBody VentaArticuloDTO ventaArticuloDTO) {
         try {
             ventaService.createVenta(ventaArticuloDTO);
             return new ResponseEntity<>("Venta registrada exitosamente", HttpStatus.OK);
         } catch (Exception e) {
+            errorLoggingService.logError("Error en VentaController - createVenta", e, ventaArticuloDTO.toString());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al crear la venta: " + e.getMessage());
         }
     }
