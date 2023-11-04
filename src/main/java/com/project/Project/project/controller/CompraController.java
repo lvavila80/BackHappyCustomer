@@ -35,6 +35,7 @@ public class CompraController {
     @PostMapping("/devolucionCompra")
     public ResponseEntity<String> actualizarDevolucion(@Valid @RequestBody DevoUpdateDTO devoUpdateDTO) {
         try {
+            
             compraService.actualizarDevolucion(devoUpdateDTO.getIdCompra(), devoUpdateDTO.getDescripcion(), devoUpdateDTO.getDevuelto());
             return new ResponseEntity<>("Devolución exitosa", HttpStatus.OK);
         } catch (Exception e) {
