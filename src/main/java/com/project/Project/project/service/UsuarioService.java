@@ -1,4 +1,5 @@
 package com.project.Project.project.service;
+
 import com.project.Project.project.model.Usuario;
 import com.project.Project.project.model.UsuarioDAO;
 import com.project.Project.project.repository.UsuarioRepository;
@@ -52,9 +53,32 @@ public class UsuarioService {
         Optional<Usuario> usuarioOpt = usuarioRepository.findByCorreo(correo);
         if (usuarioOpt.isPresent()) {
             Usuario usuario = usuarioOpt.get();
-            return usuario.getPasswd().equals(passwd);
+            // Usar una función de validación de contraseñas al comparar
+            return validarContrasena(passwd) && usuario.getPasswd().equals(passwd);
         }
         return false;
     }
 
+    // Validar la estructura de la contraseña
+    private boolean validarContrasena(String passwd) {
+        if (passwd == null || passwd.length() < 15) {
+            return false;
+        }
+        boolean tieneMayuscula = false;
+        boolean tieneNumero = false;
+        boolean tieneSimbolo = false;
+
+        for (char c : passwd.toCharArray()) {
+            if (Character.isUpperCase(c)) tieneMayuscula = true;
+            else if (Character.isDigit(c)) tieneNumero = true;
+            else if (!Character.isLetterOrDigit(c)) tieneSimbolo = true;
+
+            if (tieneMayuscula && tieneNumero && tieneSimbolo) {
+                return true;
+            }
+        }
+
+        return tieneMayuscula && tieneNumero && tieneSimbolo;
+    }
 }
+
