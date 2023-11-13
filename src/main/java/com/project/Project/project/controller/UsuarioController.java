@@ -155,4 +155,19 @@ public class UsuarioController {
             return ResponseEntity.badRequest().body("El token debe ser de seis dígitos.");
         }
     }
+
+    @PostMapping("/RehabilitarUsuario/{numeroToken}")
+    public ResponseEntity<String> rehabilitarUsuario(@PathVariable("numeroToken") int numerotoken,@RequestBody Map<String, String> body){
+        String contrasenia = body.get("contrasenia");
+        try{
+            String resultado = usuarioService.recuperarContrasenia(numerotoken,contrasenia);
+            if (resultado.equals("Contraseña actualizada con éxito.")) {
+                return ResponseEntity.ok("Usuario reestablecido.");
+            } else {
+                return ResponseEntity.badRequest().body(resultado);
+            }
+        }catch(Exception e){
+            return ResponseEntity.badRequest().body("Token invalido.");
+        }
+    }
 }

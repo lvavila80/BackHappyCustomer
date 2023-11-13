@@ -5,11 +5,8 @@ import com.project.Project.project.repository.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,11 +61,36 @@ public class UsuarioService {
         if (usuarioOpt.isPresent()) {
             Usuario usuario = usuarioOpt.get();
             if(usuario.getPasswd().equals(passwd)){
+                if(usuario.getIntentosFallidos() > 0 ){
+                    usuario.setIntentosFallidos(0);
+                    usuarioRepository.save(usuario);
+                }
                 if(usuario.getEstado().equals("Preregistro")){
                     throw new RuntimeException("Debe confirmar su registro antes de autenticarse");
                 }
+                if(usuario.getEstado().equals("Inhabilitado")){
+                    throw new RuntimeException("El usuario se ha inhabilitado.");
+                }
                 return true;
+            }else{
+                usuario.setIntentosFallidos(usuario.getIntentosFallidos() + 1);
+                usuarioRepository.save(usuario);
+                if(usuario.getIntentosFallidos()>=3){
+                    usuario.setEstado("Inhabilitado");
+                    usuarioRepository.save(usuario);
+                    Integer token = tokenGenerator.generateToken();
+                    usuario.setToken(token);
+                    usuarioRepository.save(usuario);
+                    try{
+                        emailService.sendSimpleMessage(correo,"Token Rehabilitación usuario","Este es su token de recuperacion de usuario, ingreselo en la aplicación: " + token);
+                    }catch(Exception e){
+                        throw new IllegalArgumentException("Error al enviar correo de recuperación, consulte con el administrador");
+                    }
+                    throw new RuntimeException("El usuario se ha inhabilitado por intentos de sesion fallidos. Se ha enviado un token a su correo para habilitar su usuario");
+                }
             }
+        }else{
+            throw new RuntimeException("Usuario Inexistente");
         }
         return false;
     }
@@ -103,30 +125,35 @@ public class UsuarioService {
         }
     }
     public String recuperarContrasenia(int numeroToken, String nuevaContrasenia) {
-        if (nuevaContrasenia.length() < 8) {
-            return "La contraseña debe tener al menos 8 caracteres.";
-        }
-        if (!nuevaContrasenia.matches(".[A-Z].")) {
-            return "La contraseña debe tener al menos una letra mayúscula.";
-        }
-        if (!nuevaContrasenia.matches(".[a-z].")) {
-            return "La contraseña debe tener al menos una letra minúscula.";
-        }
-        if (!nuevaContrasenia.matches(".[0-9].")) {
-            return "La contraseña debe tener al menos un número.";
-        }
-        if (!nuevaContrasenia.matches(".[!@#$%^&()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?].*")) {
-            return "La contraseña debe tener al menos un símbolo.";
-        }
 
         Optional<Usuario> usuarioOptional = usuarioRepository.findByToken(numeroToken);
         if (usuarioOptional.isPresent()) {
+            if (nuevaContrasenia.length() < 8) {
+                return "La contraseña debe tener al menos 8 caracteres.";
+            }
+            if (!nuevaContrasenia.matches("^(?=.[A-Z]).$")) {
+                return "La contraseña debe tener al menos una letra mayúscula.";
+            }
+            if (!nuevaContrasenia.matches("^(?=.[a-z]).$")) {
+                return "La contraseña debe tener al menos una letra minúscula.";
+            }
+            if (!nuevaContrasenia.matches("^(?=.[0-9]).$")) {
+                return "La contraseña debe tener al menos un número.";
+            }
+            if (!nuevaContrasenia.matches("^(?=.[!@#$%^&()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?]).*$")) {
+                return "La contraseña debe tener al menos un símbolo.";
+            }
             Usuario usuario = usuarioOptional.get();
             usuario.setPasswd(nuevaContrasenia);
+            usuario.setEstado("Activo");
+            usuario.setIntentosFallidos(0);
             usuarioRepository.save(usuario);
+
             return "Contraseña actualizada con éxito.";
         } else {
             throw new IllegalArgumentException("Token incorrecto");
         }
     }
+
+
 }

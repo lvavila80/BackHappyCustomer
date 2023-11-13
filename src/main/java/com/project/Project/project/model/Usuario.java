@@ -37,6 +37,9 @@ public class Usuario {
     @Column(name = "token")
     private Integer token;
 
+    @Column(name = "intentos_fallidos")
+    private Integer intentosFallidos;
+
     public Usuario() {
     }
 
@@ -49,8 +52,16 @@ public class Usuario {
         this.cambiarClave = cambiarClave;
         this.fechaUltimoCambioClave = fechaUltimoCambioClave;
         this.token = token;
+        this.intentosFallidos = 0;
     }
 
+    public Integer getIntentosFallidos() {
+        return intentosFallidos;
+    }
+
+    public void setIntentosFallidos(Integer intentosFallidos) {
+        this.intentosFallidos = intentosFallidos;
+    }
 
     public Integer getId() {
         return id;
