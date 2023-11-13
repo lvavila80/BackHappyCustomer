@@ -120,32 +120,30 @@ public class VentaService {
     }
 
     @Transactional
-    public void revertirVenta(Long idVenta, String detalleDevolucion, ArrayList array) {
-        List<DetalleVenta> detalles = detalleVentaRepository.findByIdventa(idVenta);
-        if(detalles.isEmpty()){
-            throw new RuntimeException("Error, No existe una Venta con este id. " );
+    public void revertirVenta(Long idVenta, String detalleDevolucion, ArrayList<Integer> articulosDevueltos) {
+        List<DetalleVenta> detallesVenta = detalleVentaRepository.findByIdventa((long) idVenta.intValue());
+        if (detallesVenta.isEmpty()) {
+            throw new RuntimeException("Error, No existe una Venta con este id: " + idVenta);
         }
-        Boolean encontrado = false;
-        for (DetalleVenta detalle : detalles) {
-            try {
-                if( array.contains(detalle.getIdarticulo()) && detalle.getEstado() != null && detalle.getEstado().equals("devuelto") ){
-                    throw new RuntimeException("El articulo " + detalle.getIdarticulo() + " ya se encuentra devuelto");
-                }else if(array.contains(detalle.getIdarticulo()) && (detalle.getEstado() == null || !detalle.getEstado().equals("devuelto"))) {
-                    detalle.setEstado("devuelto");
-                    detalle.setDetalleDevolucion(detalleDevolucion);
-                    detalleVentaRepository.save(detalle);
-                    Articulo articulo = articuloRepository.findById(detalle.getIdarticulo()).get();
-                    int nuevasUnidades = ((articulo.getUnidadesdisponibles())+(detalle.getUnidadesvendidas()));
-                    articuloRepository.updateUnidadesDisponiblesById(detalle.getIdarticulo(), nuevasUnidades);
-                    encontrado = true;
-                }
 
-            } catch (Exception e) {
-                throw new RuntimeException("Error al reversar venta. " +e.getMessage());
+
+        for (DetalleVenta detalle : detallesVenta) {
+
+            if (articulosDevueltos.contains(detalle.getIdarticulo())) {
+                if ("devuelto".equals(detalle.getEstado())) {
+                    continue;
+                }
+                detalle.setEstado("devuelto");
+                detalle.setDetalleDevolucion(detalleDevolucion);
+                detalleVentaRepository.save(detalle);
+
+                Articulo articulo = articuloRepository.findById(detalle.getIdarticulo())
+                        .orElseThrow(() -> new RuntimeException("Artículo no encontrado con ID: " + detalle.getIdarticulo()));
+
+                int nuevasUnidades = articulo.getUnidadesdisponibles() + detalle.getUnidadesvendidas();
+                articulo.setUnidadesdisponibles(nuevasUnidades);
+                articuloRepository.save(articulo);
             }
-        }
-        if(!encontrado){
-            throw new RuntimeException("Error, el id del articulo no corresponde a los articulos de esta venta. " );
         }
     }
 }
