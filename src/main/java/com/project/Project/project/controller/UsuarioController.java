@@ -72,7 +72,7 @@ public class UsuarioController {
         }
         int token = tokenGenerator.generateToken();
         try{
-            emailService.sendSimpleMessage(correo,"Registro gestion de inventarios","Este es su token de confirmación de registro, ingreselo en la aplicación: " + token);
+            emailService.sendSimpleMessage(correo,"Token Registro Gestion de Inventarios","Este es su token de confirmación de registro, ingreselo en la aplicación: " + token);
         }catch(Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No se pudo insertar el usuario: " + e.getMessage());
         }
@@ -105,7 +105,7 @@ public class UsuarioController {
             }
 
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error en el servidor: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
         }
     }
 
@@ -123,6 +123,36 @@ public class UsuarioController {
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/correoReestablecerContrasenia")
+    public ResponseEntity<String> recuperarContrasenia(@RequestBody Map<String, String> body){
+        String correo= body.get("correo");
+        if(correo!= null){
+            try{
+                usuarioService.correoRecuperacionContrasenia(correo);
+                return ResponseEntity.ok("Se ha enviado un correo de recuperacion con su token a su dirección de email registrada.");
+            }catch(Exception e){
+                return ResponseEntity.badRequest().body("Error: "+ e);
+            }
+        }else{
+            return ResponseEntity.badRequest().body("Correo inexistente.");
+        }
+    }
+
+    @PostMapping("/ReestablecerContrasenia/{numeroToken}")
+    public ResponseEntity<String> reestablecerContrasenia(@PathVariable("numeroToken") int numeroToken, @RequestBody Map<String, String> body) {
+        String contrasenia = body.get("contrasenia");
+        if (String.valueOf(numeroToken).length() == 6) {
+            String resultado = usuarioService.recuperarContrasenia(numeroToken, contrasenia);
+            if (resultado.equals("Contraseña actualizada con éxito.")) {
+                return ResponseEntity.ok(resultado);
+            } else {
+                return ResponseEntity.badRequest().body(resultado);
+            }
+        } else {
+            return ResponseEntity.badRequest().body("El token debe ser de seis dígitos.");
         }
     }
 }
