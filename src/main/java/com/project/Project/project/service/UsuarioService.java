@@ -64,11 +64,28 @@ public class UsuarioService {
         if (usuarioOpt.isPresent()) {
             Usuario usuario = usuarioOpt.get();
             if(usuario.getPasswd().equals(passwd)){
+                if(usuario.getIntentosFallidos() > 0 ){
+                    usuario.setIntentosFallidos(0);
+                    usuarioRepository.save(usuario);
+                }
                 if(usuario.getEstado().equals("Preregistro")){
                     throw new RuntimeException("Debe confirmar su registro antes de autenticarse");
                 }
+                if(usuario.getEstado().equals("Inhabilitado")){
+                    throw new RuntimeException("El usuario se ha inhabilitado.");
+                }
                 return true;
+            }else{
+                usuario.setIntentosFallidos(usuario.getIntentosFallidos() + 1);
+                usuarioRepository.save(usuario);
+                if(usuario.getIntentosFallidos()>=3){
+                    usuario.setEstado("Inhabilitado");
+                    usuarioRepository.save(usuario);
+                    throw new RuntimeException("El usuario se ha inhabilitado por intentos de sesion fallidos.");
+                }
             }
+        }else{
+            throw new RuntimeException("Usuario Inexistente");
         }
         return false;
     }
