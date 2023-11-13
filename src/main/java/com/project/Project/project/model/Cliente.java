@@ -11,6 +11,15 @@ public class Cliente {
     private int identificacion;
     private String nombre;
 
+    public Cliente() {
+    }
+
+    public Cliente(Long id, int identificacion, String nombre) {
+        this.id = id;
+        this.identificacion = identificacion;
+        this.nombre = nombre;
+    }
+
     public Long getId() {
         return id;
     }

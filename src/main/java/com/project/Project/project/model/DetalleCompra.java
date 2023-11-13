@@ -1,33 +1,48 @@
 package com.project.Project.project.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 
 @Entity
-
 @Table(name = "detalle_compra")
-
 public class DetalleCompra {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column(name = "idcompra", length = 45)
+
+    @NotNull(message = "El ID de compra no puede ser nulo.")
+    @Min(value = 1, message = "El ID de compra debe ser un entero positivo.")
+    @Column(name = "idcompra")
     private int idcompra;
-    @Column(name = "idcategoria", length = 45)
+
+    @NotNull(message = "El ID de categoría no puede ser nulo.")
+    @Min(value = 1, message = "El ID de categoría debe ser un entero positivo.")
+    @Column(name = "idcategoria")
     private double idcategoria;
-    @Column(name = "idarticulo", length = 45)
+
+    @NotNull(message = "El ID de artículo no puede ser nulo.")
+    @Min(value = 1, message = "El ID de artículo debe ser un entero positivo.")
+    @Column(name = "idarticulo")
     private int idarticulo;
-    @Column(name = "unidadescompradas", length = 45)
+
+    @NotNull(message = "Las unidades compradas no pueden ser nulas.")
+    @Min(value = 1, message = "Las unidades compradas deben ser un entero positivo.")
+    @Column(name = "unidadescompradas")
     private int unidadescompradas;
-    @Column(name = "valorunidad", length = 45)
+
+    @NotNull(message = "El valor unitario no puede ser nulo.")
+    @PositiveOrZero(message = "El valor unitario debe ser positivo.")
+    @Column(name = "valorunidad")
     private double valorunidad;
 
-    @Column(name = "estado", length = 45)
+    @NotBlank(message = "El estado no puede estar vacío.")
+    @Column(name = "estado")
     private String estado;
 
-    @Column(name = "detalle_devolucion", length = 45)
+    @NotBlank(message = "El detalle de devolución no puede estar vacío.")
+    @Column(name = "detalle_devolucion")
     private String detalleDevolucion;
-
 
     public DetalleCompra(int idcompra, int idarticulo, int idcategoria, int unidadescompradas, double valorunidad, String estado, String detalleDevolucion) {
         this.idcompra = idcompra;

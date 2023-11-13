@@ -1,11 +1,20 @@
 package com.project.Project.project.model;
+
+import jakarta.validation.constraints.*;
 import java.util.List;
 
 public class CompraArticulosDTO {
-    private List<ArticulosCompraDTO> articulosCompra;
-    private Integer idUsuario;
-    private Integer idProveedor;
 
+    @NotEmpty(message = "La lista de artículos no puede estar vacía.")
+    private List<ArticulosCompraDTO> articulosCompra;
+
+    @NotNull(message = "El ID del usuario no puede ser nulo.")
+    @Min(value = 1, message = "El ID del usuario debe ser un entero positivo.")
+    private Integer idUsuario;
+
+    @NotNull(message = "El ID del proveedor no puede ser nulo.")
+    @Min(value = 1, message = "El ID del proveedor debe ser un entero positivo.")
+    private Integer idProveedor;
 
     public CompraArticulosDTO(List<ArticulosCompraDTO> articulosCompra, Integer idUsuario, Integer idProveedor) {
         this.articulosCompra = articulosCompra;
@@ -15,6 +24,7 @@ public class CompraArticulosDTO {
 
     public CompraArticulosDTO() {
     }
+
     public Integer getIdProveedor() {
         return idProveedor;
     }

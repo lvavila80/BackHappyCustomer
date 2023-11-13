@@ -1,6 +1,7 @@
 package com.project.Project.project.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 
 @Entity
 @Table(name = "detalle_venta")
@@ -10,23 +11,36 @@ public class DetalleVenta {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @NotNull(message = "El ID de venta no puede ser nulo.")
+    @Min(value = 1, message = "El ID de venta debe ser un entero positivo.")
     @Column(name = "idventa", nullable = false)
     private int idventa;
 
+    @NotNull(message = "El ID de artículo no puede ser nulo.")
+    @Min(value = 1, message = "El ID de artículo debe ser un entero positivo.")
     @Column(name = "idarticulo", nullable = false)
     private int idarticulo;
 
+    @NotNull(message = "Las unidades vendidas no pueden ser nulas.")
+    @Min(value = 1, message = "Las unidades vendidas deben ser un entero positivo.")
     @Column(name = "unidadesvendidas", nullable = false)
     private int unidadesvendidas;
 
+    @NotNull(message = "El valor unitario no puede ser nulo.")
+    @PositiveOrZero(message = "El valor unitario debe ser positivo.")
     @Column(name = "valorunidad", nullable = false)
     private Double valorunidad;
 
+    @NotNull(message = "El ID de categoría no puede ser nulo.")
+    @Min(value = 1, message = "El ID de categoría debe ser un entero positivo.")
     @Column(name = "idcategoria", nullable = false)
     private int idcategoria;
 
+    @NotBlank(message = "El estado no puede estar vacío.")
     @Column(name = "estado", length = 45)
     private String estado;
+
+    @NotBlank(message = "El detalle de devolución no puede estar vacío.")
     @Column(name = "detalle_devolucion", length = 45)
     private String detalleDevolucion;
 

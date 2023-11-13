@@ -1,5 +1,7 @@
 package com.project.Project.project.model;
+
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 
 import java.util.Date;
 
@@ -10,7 +12,12 @@ public class Compra {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    @PositiveOrZero(message = "El valor total no puede ser negativo.")
     private double valortotal;
+
+    @PastOrPresent(message = "La fecha de compra no puede estar en el futuro.")
+    private Date fechacompra;
 
     public Compra() {
         this.fechacompra = new Date();
@@ -21,18 +28,13 @@ public class Compra {
         this.fechacompra = new Date();
     }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
     public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
-
 
     public double getValortotal() {
         return valortotal;
@@ -49,6 +51,4 @@ public class Compra {
     public void setFechacompra(Date fechacompra) {
         this.fechacompra = fechacompra;
     }
-
-    private Date fechacompra;
 }

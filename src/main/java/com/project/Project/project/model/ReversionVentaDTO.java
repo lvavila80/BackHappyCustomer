@@ -1,13 +1,19 @@
 package com.project.Project.project.model;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 
 import java.util.ArrayList;
 
 public class ReversionVentaDTO {
+
+    @NotNull(message = "El ID de venta no puede ser nulo.")
+    @Min(value = 1, message = "El ID de venta debe ser un número positivo.")
     private Long idVenta;
+
+    @NotBlank(message = "El motivo de reversión no puede estar vacío.")
     private String motivoReversion;
-    @NotNull
+
+    @NotNull(message = "La lista de artículos devueltos no puede ser nula.")
     private ArrayList devuelto;
 
     public ReversionVentaDTO() {

@@ -34,23 +34,38 @@ public class Usuario {
     @Column(name = "fecha_ult_cambio_clave")
     private Date fechaUltimoCambioClave;
 
+    @Column(name = "token")
+    private Integer token;
 
     public Usuario() {
     }
 
-    public Usuario(String correo, String passwd, Integer cedula, String nombre, String estado, boolean cambiarClave, Date fechaUltimoCambioClave) {
+    public Usuario(String correo, String passwd, Integer cedula, String nombre, boolean cambiarClave, Date fechaUltimoCambioClave, Integer token) {
         this.correo = correo;
         this.passwd = passwd;
         this.cedula = cedula;
         this.nombre = nombre;
-        this.estado = estado;
+        this.estado = "Preregistro";
         this.cambiarClave = cambiarClave;
         this.fechaUltimoCambioClave = fechaUltimoCambioClave;
+        this.token = token;
     }
 
 
     public Integer getId() {
         return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getToken() {
+        return token;
+    }
+
+    public void setToken(Integer token) {
+        this.token = token;
     }
 
     public void setId(int id) {
