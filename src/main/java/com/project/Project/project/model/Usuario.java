@@ -138,3 +138,4 @@ public class Usuario {
         this.fechaUltimoCambioClave = fechaUltimoCambioClave;
     }
 }
+
