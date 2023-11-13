@@ -2,6 +2,8 @@ package com.project.Project.project.service;
 import com.project.Project.project.model.Usuario;
 import com.project.Project.project.model.UsuarioDAO;
 import com.project.Project.project.repository.UsuarioRepository;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -52,9 +54,28 @@ public class UsuarioService {
         Optional<Usuario> usuarioOpt = usuarioRepository.findByCorreo(correo);
         if (usuarioOpt.isPresent()) {
             Usuario usuario = usuarioOpt.get();
-            return usuario.getPasswd().equals(passwd);
+            if(usuario.getPasswd().equals(passwd)){
+                if(usuario.getEstado().equals("Preregistro")){
+                    throw new RuntimeException("Debe confirmar su registro antes de autenticarse");
+                }
+                return true;
+            }
         }
         return false;
     }
-
+    @Transactional
+    public boolean confirmarRegistro(String correo, Integer token) {
+        Usuario usuario = usuarioRepository.findByCorreo(correo)
+                .orElseThrow(() -> new EntityNotFoundException("Usuario Inexistente."));
+        if(usuario.getToken().equals(token)) {
+            if(usuario.getEstado().equals("Activo")){
+                throw new IllegalArgumentException("El usuario ya se encuentra activo.");
+            }
+            usuario.setEstado("Activo");
+            usuarioRepository.save(usuario);
+            return true;
+        } else {
+            throw new IllegalArgumentException("Token incorrecto");
+        }
+    }
 }
