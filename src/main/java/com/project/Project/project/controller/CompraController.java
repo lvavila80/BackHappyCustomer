@@ -39,7 +39,7 @@ public class CompraController {
         try {
             compraService.actualizarDevolucion(devoUpdateDTO.getIdCompra(), devoUpdateDTO.getDescripcion(), devoUpdateDTO.getDevuelto());
             return new ResponseEntity<>("Devolución exitosa", HttpStatus.OK);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             errorLoggingService.logError("Error en CompraController - devolucionCompra", e, devoUpdateDTO.toString());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }

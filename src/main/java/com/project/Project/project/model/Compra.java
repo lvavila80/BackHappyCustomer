@@ -3,6 +3,7 @@ package com.project.Project.project.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -50,5 +51,13 @@ public class Compra {
 
     public void setFechacompra(Date fechacompra) {
         this.fechacompra = fechacompra;
+    }
+
+    public LocalDate getFecha() {
+        return null;
+    }
+
+    public LocalDate getFechaCompra() {
+        return null;
     }
 }
