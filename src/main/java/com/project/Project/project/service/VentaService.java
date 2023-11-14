@@ -134,7 +134,9 @@ public class VentaService {
                     detalle.setEstado(4);
                     detalle.setDetalleDevolucion(detalleDevolucion);
                     detalleVentaRepository.save(detalle);
-                    Articulo articulo = articuloRepository.findById(detalle.getIdarticulo()).get();
+                    Articulo articulo = articuloRepository.findById(detalle.getIdarticulo())
+                    .orElseThrow(() -> new RuntimeException("Artículo no encontrado con ID: " + detalle.getIdarticulo()));
+
                     int nuevasUnidades = ((articulo.getUnidadesdisponibles())+(detalle.getUnidadesvendidas()));
                     articuloRepository.updateUnidadesDisponiblesById(detalle.getIdarticulo(), nuevasUnidades);
                     encontrado = true;
