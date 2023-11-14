@@ -1,7 +1,9 @@
 package com.project.Project.project.controller;
 
+import com.project.Project.project.model.EstadosDTO;
 import com.project.Project.project.model.ReversionVentaDTO;
 import com.project.Project.project.model.VentaArticuloDTO;
+import com.project.Project.project.model.articulosEstadoDTO;
 import com.project.Project.project.service.ErrorLoggingService;
 import com.project.Project.project.service.VentaService;
 import jakarta.validation.Valid;
@@ -41,5 +43,20 @@ public class VentaController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
+    }
+
+
+    @PostMapping("/estadoVenta")
+    public ResponseEntity<String> actualizarEstadoVenta(@RequestBody EstadosDTO estadosDTO) {
+        try {
+            int idVenta = estadosDTO.getOperacion();
+            for(articulosEstadoDTO estado : estadosDTO.getArticulos()){
+                ventaService.actualizarEstadoVenta(idVenta,estado);
+            }
+            return new ResponseEntity<>("Se cambió el estado", HttpStatus.OK);
+        } catch (Exception e) {
+            errorLoggingService.logError("Error en VentaController - actualizarEstadoCompra", e, "");
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

@@ -1,10 +1,6 @@
 package com.project.Project.project.service;
 
-import com.project.Project.project.model.Articulo;
-import com.project.Project.project.model.ArticuloVentaDTO;
-import com.project.Project.project.model.Venta;
-import com.project.Project.project.model.DetalleVenta;
-import com.project.Project.project.model.ArticuloCategoria;
+import com.project.Project.project.model.*;
 import com.project.Project.project.repository.ArticuloRepository;
 import com.project.Project.project.repository.DetalleVentaRepository;
 import com.project.Project.project.repository.VentaRepository;
@@ -14,6 +10,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -55,15 +52,20 @@ public class DetalleVentaService {
             detalleVenta.setIdcategoria(idCategoria);
             detalleVenta.setUnidadesvendidas(ventaArticulosDTO.getUnidadesVendidas());
             detalleVenta.setIdarticulo(idArticulo);
-
-            if (articulo != null) {
-                detalleVenta.setValorunidad(articulo.getValorunitario());
+            detalleVenta.setEstado(ventaArticulosDTO.getEstado());
+            if(detalleVenta.getEstado()==1 || detalleVenta.getEstado()==2){
+                if (articulo != null) {
+                    detalleVenta.setValorunidad(articulo.getValorunitario());
+                }
+                return detalleVentaRepository.save(detalleVenta);
+            }else{
+                throw new RuntimeException("El estado no es valido para el registro: "+ detalleVenta.getEstado());
             }
-            return detalleVentaRepository.save(detalleVenta);
         } catch (Exception e) {
             throw new RuntimeException("Error al guardar venta y relaciones: " + e.getMessage(), e);
         }
     }
+    public List<DetalleVenta> getDetallesVentaByIdcompra(int idventa) {
+        return detalleVentaRepository.findByIdventa(idventa);
+    }
 }
-
-
