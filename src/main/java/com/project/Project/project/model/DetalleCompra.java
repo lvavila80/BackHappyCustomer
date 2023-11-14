@@ -38,13 +38,13 @@ public class DetalleCompra {
 
     @NotBlank(message = "El estado no puede estar vacío.")
     @Column(name = "estado")
-    private String estado;
+    private Integer estado;
 
     @NotBlank(message = "El detalle de devolución no puede estar vacío.")
     @Column(name = "detalle_devolucion")
     private String detalleDevolucion;
 
-    public DetalleCompra(int idcompra, int idarticulo, int idcategoria, int unidadescompradas, double valorunidad, String estado, String detalleDevolucion) {
+    public DetalleCompra(int idcompra, int idarticulo, int idcategoria, int unidadescompradas, double valorunidad, Integer estado, String detalleDevolucion) {
         this.idcompra = idcompra;
         this.idarticulo = idarticulo;
         this.idcategoria = idcategoria;
@@ -54,7 +54,7 @@ public class DetalleCompra {
         this.detalleDevolucion = detalleDevolucion;
     }
 
-    public DetalleCompra(int idcompra, int idarticulo, int unidadescompradas, double valorunidad, String estado, String detalleDevolucion) {
+    public DetalleCompra(int idcompra, int idarticulo, int unidadescompradas, double valorunidad, Integer estado, String detalleDevolucion) {
         this.idcompra = idcompra;
         this.idarticulo = idarticulo;
         this.unidadescompradas = unidadescompradas;
@@ -122,11 +122,11 @@ public class DetalleCompra {
         this.valorunidad = valorunidad;
     }
 
-    public String getEstado() {
+    public Integer getEstado() {
         return estado;
     }
 
-    public void setEstado(String estado) {
+    public void setEstado(Integer estado) {
         this.estado = estado;
     }
 }

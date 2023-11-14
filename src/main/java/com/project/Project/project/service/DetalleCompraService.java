@@ -40,6 +40,7 @@ public class DetalleCompraService {
             detalleCompra.setIdcategoria(compraArticulosDTO.getIdCategoria());
             detalleCompra.setValorunidad(compraArticulosDTO.getValorUnidad());
             detalleCompra.setUnidadescompradas(compraArticulosDTO.getUnidadesCompradas());
+            detalleCompra.setEstado(compraArticulosDTO.getEstado());
             detalleCompra.setIdarticulo(idArticulo);
             return detalleCompraRepository.save(detalleCompra);
         } catch (Exception e) {

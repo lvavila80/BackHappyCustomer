@@ -59,10 +59,14 @@ public class CompraService {
         List<Categoria> categorias;
         categorias = categoriaRepository.findAll();
         for(ArticulosCompraDTO articuloCompra : compraArticulosDTO.getArticulosCompra()) {
-            if (categorias.stream().noneMatch(categoria -> categoria.getId() == articuloCompra.getIdCategoria())) {
-                throw new RuntimeException("Error, no existe la categoría con el id :"+articuloCompra.getIdCategoria());
+            if(articuloCompra.getEstado()==1 || articuloCompra.getEstado()==2){
+                if (categorias.stream().noneMatch(categoria -> categoria.getId() == articuloCompra.getIdCategoria())) {
+                    throw new RuntimeException("Error, no existe la categoría con el id :"+articuloCompra.getIdCategoria());
+                }
+                valorTotal += (articuloCompra.getValorUnidad()*articuloCompra.getUnidadesCompradas());
+            }else{
+                throw new RuntimeException("El estado no es valido para el registro: "+ articuloCompra.getEstado());
             }
-            valorTotal += (articuloCompra.getValorUnidad()*articuloCompra.getUnidadesCompradas());
         }
         Compra compra = new Compra(valorTotal);
         Compra savedCompra = compraRepository.save(compra);
@@ -102,10 +106,10 @@ public class CompraService {
         Boolean encontrado = false;
         for (DetalleCompra detalle : detalles) {
             try {
-                if( array.contains(detalle.getIdarticulo()) && detalle.getEstado() != null && detalle.getEstado().equals("devuelto") ){
+                if( array.contains(detalle.getIdarticulo()) && detalle.getEstado() != null && detalle.getEstado()==4 ){
                     throw new RuntimeException("El articulo " + detalle.getIdarticulo() + " ya se encuentra devuelto.");
-                }else if(array.contains(detalle.getIdarticulo()) && (detalle.getEstado() == null || !detalle.getEstado().equals("devuelto"))) {
-                    detalle.setEstado("devuelto");
+                }else if(array.contains(detalle.getIdarticulo()) && (detalle.getEstado() == null || !(detalle.getEstado()==4))) {
+                    detalle.setEstado(4);
                     detalle.setDetalleDevolucion(detalleDevolucion);
                     detalleCompraRepository.save(detalle);
                     Articulo articulo = articuloRepository.findById(detalle.getIdarticulo()).get();
@@ -122,4 +126,43 @@ public class CompraService {
         }
     }
 
+
+    public void actualizarEstadoCompra(int idCompra, articulosEstadoDTO nuevoEstado){
+        if(nuevoEstado.getEstado()==4){
+            throw new RuntimeException("Error, No puede hacer devoluciones a través de este modulo, use el modulo correcto.");
+        }
+        List<DetalleCompra> detalleCompra= detalleCompraService.getDetallesCompraByIdcompra(idCompra);
+        if(!detalleCompra.isEmpty()){
+            for (DetalleCompra detalle : detalleCompra){
+                if(detalle.getEstado() == nuevoEstado.getEstado()){
+                    throw new RuntimeException("Error, esta compra ya tiene este estado.");
+                }
+                if(detalle.getIdarticulo() == nuevoEstado.getId()){
+                    if (detalle.getEstado()== 4 || detalle.getEstado()==3) {
+                        throw new RuntimeException("Error, la compra ya no puede cambiar de estado.");
+                    }
+                    if(detalle.getEstado()==2 && !(nuevoEstado.getEstado()==4)){
+                        throw new RuntimeException("Error, las compras confirmadas solo pueden devolverse.");
+                    }
+                    if(detalle.getEstado()==1 && nuevoEstado.getEstado()==4){
+                        throw new RuntimeException("Error, la compra no puede pasar de Pendiente a Devuelto.");
+                    }
+                    if (nuevoEstado.getEstado()==3 && !(detalle.getEstado()==1)){
+                        throw new RuntimeException("Error, la compra solo puede cancelarse si su estado es Pendiente.");
+                    }
+                    if(nuevoEstado.getEstado()>4){
+                        throw new RuntimeException("Error, estado invalido para este proceso.");
+                    }
+                }
+            }
+            for (DetalleCompra detalle : detalleCompra){
+                if(detalle.getIdarticulo() == nuevoEstado.getId()) {
+                    detalle.setEstado(nuevoEstado.getEstado());
+                    detalleCompraRepository.save(detalle);
+                }
+            }
+        }else{
+            throw new RuntimeException("Error, compra inexistente." );
+        }
+    }
 }
