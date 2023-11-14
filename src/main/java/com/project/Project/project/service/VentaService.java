@@ -125,15 +125,13 @@ public class VentaService {
         if (detallesVenta.isEmpty()) {
             throw new RuntimeException("Error, No existe una Venta con este id: " + idVenta);
         }
-
-
         for (DetalleVenta detalle : detallesVenta) {
 
             if (articulosDevueltos.contains(detalle.getIdarticulo())) {
                 if ("devuelto".equals(detalle.getEstado())) {
                     continue;
                 }
-                detalle.setEstado("devuelto");
+                detalle.setEstado("art devuelto");
                 detalle.setDetalleDevolucion(detalleDevolucion);
                 detalleVentaRepository.save(detalle);
 
