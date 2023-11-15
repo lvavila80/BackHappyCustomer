@@ -44,14 +44,12 @@ public class VentaController {
         }
     }
 
-
-
     @PostMapping("/estadoVenta")
     public ResponseEntity<String> actualizarEstadoVenta(@RequestBody EstadosDTO estadosDTO) {
         try {
             int idVenta = estadosDTO.getOperacion();
-            for(articulosEstadoDTO estado : estadosDTO.getArticulos()){
-                ventaService.actualizarEstadoVenta(idVenta,estado);
+            for (articulosEstadoDTO estado : estadosDTO.getArticulos()) {
+                ventaService.actualizarEstadoVenta(idVenta, estado);
             }
             return new ResponseEntity<>("Se cambió el estado", HttpStatus.OK);
         } catch (Exception e) {
