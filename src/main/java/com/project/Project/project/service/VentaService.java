@@ -8,6 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -42,12 +46,12 @@ public class VentaService {
         try {
 
             Optional<Cliente> cliente = clienteRepository.findById((long) ventaArticulosDTO.getIdCliente());
-            if(cliente.isEmpty()){
+            if (cliente.isEmpty()) {
                 throw new RuntimeException("El cliente no se encuentra registrado en el sistema.");
             }
 
             Optional<Usuario> usuario = usuarioRepository.findById((ventaArticulosDTO.getIdUsuario()));
-            if(usuario.isEmpty()){
+            if (usuario.isEmpty()) {
                 throw new RuntimeException("El usuario no se encuentra autorizado para realizar esta operación, o no existe en el sistema.");
             }
 
@@ -119,36 +123,68 @@ public class VentaService {
         return true;
     }
 
-    @Transactional
-    public void revertirVenta(int idVenta, String detalleDevolucion, ArrayList array) {
-        List<DetalleVenta> detalles = detalleVentaRepository.findByIdventa(idVenta);
-        if(detalles.isEmpty()){
-            throw new RuntimeException("Error, No existe una Venta con este id. " );
+    public boolean revertirVenta(int idVenta, String detalleDevolucion, List<ProductoRevertidoDTO> productosDevueltos, boolean confirmacionUsuario) {
+        if (!confirmacionUsuario) {
+            throw new RuntimeException("La confirmación del usuario es requerida para proceder con la reversión.");
         }
-        Boolean encontrado = false;
-        for (DetalleVenta detalle : detalles) {
-            try {
-                if( array.contains(detalle.getIdarticulo()) && detalle.getEstado() != null && detalle.getEstado()==4 ){
-                    throw new RuntimeException("El articulo " + detalle.getIdarticulo() + " ya se encuentra devuelto");
-                }else if(array.contains(detalle.getIdarticulo()) && (detalle.getEstado() == null || !(detalle.getEstado()==4))) {
-                    detalle.setEstado(4);
+
+        long idVentaLong = (long) idVenta;
+        Optional<Venta> optionalVenta = ventaRepository.findById(idVentaLong);
+        if (!optionalVenta.isPresent()) {
+            throw new RuntimeException("Error, No existe una Venta con este id.");
+        }
+
+        Venta venta = optionalVenta.get();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String fechaEnBD = dateFormat.format(venta.getFechaVenta());
+        LocalDate fechaBD = LocalDate.parse(fechaEnBD, DateTimeFormatter.ISO_LOCAL_DATE);
+        LocalDate fechaHoy = LocalDate.now();
+        Period periodo = Period.between(fechaBD, fechaHoy);
+        int diferenciaMeses = periodo.getMonths();
+        if (diferenciaMeses > 3) {
+            throw new RuntimeException("Error, La venta fue realizada hace más de 3 meses.");
+        }
+
+        List<DetalleVenta> detalles = detalleVentaRepository.findByIdventa(idVenta);
+        if (detalles.isEmpty()) {
+            throw new RuntimeException("Error, No existe una Venta con este id.");
+        }
+
+        for (ProductoRevertidoDTO producto : productosDevueltos) {
+            boolean encontrado = false;
+            for (DetalleVenta detalle : detalles) {
+                if (detalle.getIdarticulo() == producto.getIdArticulo()) {
+                    if (detalle.getEstado() != null && detalle.getEstado() == 4) {
+                        throw new RuntimeException("El articulo " + detalle.getIdarticulo() + " ya se encuentra devuelto");
+                    }
+
+                    if (producto.getCantidad() > detalle.getUnidadesvendidas()) {
+                        throw new RuntimeException("Cantidad a devolver del articulo " + detalle.getIdarticulo() + " es mayor a la vendida.");
+                    }
+
+                    detalle.setUnidadesvendidas(detalle.getUnidadesvendidas() - producto.getCantidad());
+
+                    detalle.setEstado(4); // Considerar si este estado es adecuado o si se necesita otro estado
                     detalle.setDetalleDevolucion(detalleDevolucion);
                     detalleVentaRepository.save(detalle);
+
                     Articulo articulo = articuloRepository.findById(detalle.getIdarticulo())
-                    .orElseThrow(() -> new RuntimeException("Artículo no encontrado con ID: " + detalle.getIdarticulo()));
+                            .orElseThrow(() -> new RuntimeException("Artículo no encontrado con ID: " + detalle.getIdarticulo()));
+                    int nuevasUnidades = articulo.getUnidadesdisponibles() + producto.getCantidad();
+                    articulo.setUnidadesdisponibles(nuevasUnidades);
+                    articuloRepository.save(articulo);
 
-                    int nuevasUnidades = ((articulo.getUnidadesdisponibles())+(detalle.getUnidadesvendidas()));
-                    articuloRepository.updateUnidadesDisponiblesById(detalle.getIdarticulo(), nuevasUnidades);
                     encontrado = true;
+                    break;
                 }
+            }
 
-            } catch (Exception e) {
-                throw new RuntimeException("Error al reversar venta. " +e.getMessage());
+            if (!encontrado) {
+                throw new RuntimeException("Error, el id del artículo " + producto.getIdArticulo() + " no corresponde a los artículos de esta venta.");
             }
         }
-        if(!encontrado){
-            throw new RuntimeException("Error, el id del articulo no corresponde a los articulos de esta venta. " );
-        }
+
+        return true;
     }
 
 
