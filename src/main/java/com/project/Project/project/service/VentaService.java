@@ -162,15 +162,12 @@ public class VentaService {
                         throw new RuntimeException("Cantidad a devolver del articulo " + detalle.getIdarticulo() + " es mayor a la vendida.");
                     }
 
-                    // Disminuir las unidades vendidas en el detalle de la venta
                     detalle.setUnidadesvendidas(detalle.getUnidadesvendidas() - producto.getCantidad());
 
-                    // Actualizar el estado y el detalle de devolución
                     detalle.setEstado(4); // Considerar si este estado es adecuado o si se necesita otro estado
                     detalle.setDetalleDevolucion(detalleDevolucion);
                     detalleVentaRepository.save(detalle);
 
-                    // Actualizar las unidades disponibles del artículo
                     Articulo articulo = articuloRepository.findById(detalle.getIdarticulo())
                             .orElseThrow(() -> new RuntimeException("Artículo no encontrado con ID: " + detalle.getIdarticulo()));
                     int nuevasUnidades = articulo.getUnidadesdisponibles() + producto.getCantidad();
@@ -178,7 +175,7 @@ public class VentaService {
                     articuloRepository.save(articulo);
 
                     encontrado = true;
-                    break; // Romper el bucle si el artículo es encontrado y procesado
+                    break;
                 }
             }
 

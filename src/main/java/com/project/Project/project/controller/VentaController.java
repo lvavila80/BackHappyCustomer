@@ -68,4 +68,19 @@ public class VentaController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+
+    @PostMapping("/estadoVenta")
+    public ResponseEntity<String> actualizarEstadoVenta(@RequestBody EstadosDTO estadosDTO) {
+        try {
+            int idVenta = estadosDTO.getOperacion();
+            for(articulosEstadoDTO estado : estadosDTO.getArticulos()){
+                ventaService.actualizarEstadoVenta(idVenta,estado);
+            }
+            return new ResponseEntity<>("Se cambió el estado", HttpStatus.OK);
+        } catch (Exception e) {
+            errorLoggingService.logError("Error en VentaController - actualizarEstadoCompra", e, "");
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

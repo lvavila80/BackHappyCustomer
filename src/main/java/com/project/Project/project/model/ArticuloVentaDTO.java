@@ -10,12 +10,23 @@ public class ArticuloVentaDTO {
     @Min(value = 1, message = "Las unidades vendidas deben ser al menos 1.")
     private int unidadesVendidas;
 
+    @Min(value = 1, message = "Las unidades vendidas deben ser al menos 1.")
+    private int estado;
     public ArticuloVentaDTO() {
     }
 
-    public ArticuloVentaDTO(int articulo, int unidadesVendidas) {
+    public ArticuloVentaDTO(int articulo, int unidadesVendidas, int estado) {
         this.articulo = articulo;
         this.unidadesVendidas = unidadesVendidas;
+        this.estado = estado;
+    }
+
+    public int getEstado() {
+        return estado;
+    }
+
+    public void setEstado(int estado) {
+        this.estado = estado;
     }
 
     public int getArticulo() {

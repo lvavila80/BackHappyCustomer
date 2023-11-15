@@ -3,6 +3,7 @@ package com.project.Project.project.model;
 import jakarta.validation.constraints.*;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ReversionVentaDTO {
 
@@ -14,7 +15,7 @@ public class ReversionVentaDTO {
     private String motivoReversion;
 
     @NotNull(message = "La lista de artículos devueltos no puede ser nula.")
-    private ArrayList devuelto;
+    private List<ProductoRevertidoDTO> devuelto;
 
     @NotNull(message = "La confirmación del usuario es requerida.")
     private boolean confirmacionUsuario;
@@ -22,14 +23,13 @@ public class ReversionVentaDTO {
     public ReversionVentaDTO() {
     }
 
-    public ReversionVentaDTO(int idVenta, String motivoReversion, ArrayList devuelto, boolean confirmacionUsuario) {
+    public ReversionVentaDTO(int idVenta, String motivoReversion, List<ProductoRevertidoDTO> devuelto, boolean confirmacionUsuario) {
         this.idVenta = idVenta;
         this.motivoReversion = motivoReversion;
         this.devuelto = devuelto;
         this.confirmacionUsuario = confirmacionUsuario;
     }
 
-    // Getters y setters para todos los campos, incluyendo confirmacionUsuario
 
     public int getIdVenta() {
         return idVenta;
@@ -48,10 +48,10 @@ public class ReversionVentaDTO {
     }
 
     public ArrayList getDevuelto() {
-        return devuelto;
+        return (ArrayList) devuelto;
     }
 
-    public void setDevuelto(ArrayList devuelto) {
+    public void setDevuelto(List<ProductoRevertidoDTO> devuelto) {
         this.devuelto = devuelto;
     }
 
@@ -63,3 +63,4 @@ public class ReversionVentaDTO {
         this.confirmacionUsuario = confirmacionUsuario;
     }
 }
+

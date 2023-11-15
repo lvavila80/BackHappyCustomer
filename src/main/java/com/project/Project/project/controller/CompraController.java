@@ -2,6 +2,8 @@ package com.project.Project.project.controller;
 
 import com.project.Project.project.model.CompraArticulosDTO;
 import com.project.Project.project.model.DevoUpdateDTO;
+import com.project.Project.project.model.EstadosDTO;
+import com.project.Project.project.model.articulosEstadoDTO;
 import com.project.Project.project.service.CompraService;
 import com.project.Project.project.service.ErrorLoggingService;
 import jakarta.validation.Valid;
@@ -37,10 +39,23 @@ public class CompraController {
         try {
             compraService.actualizarDevolucion(devoUpdateDTO.getIdCompra(), devoUpdateDTO.getDescripcion(), devoUpdateDTO.getDevuelto());
             return new ResponseEntity<>("Devolución exitosa", HttpStatus.OK);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             errorLoggingService.logError("Error en CompraController - devolucionCompra", e, devoUpdateDTO.toString());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
+    @PostMapping("/estadoCompra")
+    public ResponseEntity<String> actualizarEstadoCompra(@RequestBody EstadosDTO estadosDTO) {
+        try {
+            int idCompra = estadosDTO.getOperacion();
+            for(articulosEstadoDTO estado : estadosDTO.getArticulos()){
+                compraService.actualizarEstadoCompra(idCompra,estado);
+            }
+            return new ResponseEntity<>("Se cambió el estado", HttpStatus.OK);
+        } catch (Exception e) {
+            errorLoggingService.logError("Error en CompraController - actualizarEstadoCompra", e, "");
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

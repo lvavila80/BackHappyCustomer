@@ -70,6 +70,11 @@ public class UsuarioController {
         if (usuarioRepository.existsByCedula(cedula)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La cédula ya está en uso.");
         }
+
+        String valid = usuarioService.validarContrasena(passwd);
+        if(!(valid.equals("ok"))){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + valid);
+        }
         int token = tokenGenerator.generateToken();
         try{
             emailService.sendSimpleMessage(correo,"Token Registro Gestion de Inventarios","Este es su token de confirmación de registro, ingreselo en la aplicación: " + token);
@@ -86,7 +91,7 @@ public class UsuarioController {
             usuarioRol.setIdRol(idRol);
             usuarioRolRepository.save(usuarioRol);
 
-            return ResponseEntity.status(HttpStatus.CREATED).body("Usuario insertado con éxito. ID:" + nuevoUsuario.getId());
+            return ResponseEntity.status(HttpStatus.CREATED).body("Se ha registrado con éxito. Al correo sumistrado llegará un token de verificación para activar su cuenta");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No se pudo insertar el usuario: " + e.getMessage());
         }

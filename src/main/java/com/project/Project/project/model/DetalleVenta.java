@@ -38,7 +38,7 @@ public class DetalleVenta {
 
     @NotBlank(message = "El estado no puede estar vacío.")
     @Column(name = "estado", length = 45)
-    private String estado;
+    private Integer estado;
 
     @NotBlank(message = "El detalle de devolución no puede estar vacío.")
     @Column(name = "detalle_devolucion", length = 45)
@@ -47,7 +47,7 @@ public class DetalleVenta {
     public DetalleVenta() {
     }
 
-    public DetalleVenta(int id, int idventa, int idarticulo, int unidadesvendidas, Double valorunidad, int idcategoria, String estado, String detalleDevolucion, Venta venta) {
+    public DetalleVenta(int id, int idventa, int idarticulo, int unidadesvendidas, Double valorunidad, int idcategoria, Integer estado, String detalleDevolucion) {
         this.id = id;
         this.idventa = idventa;
         this.idarticulo = idarticulo;
@@ -59,11 +59,11 @@ public class DetalleVenta {
     }
 
 
-    public String getEstado() {
+    public Integer getEstado() {
         return estado;
     }
 
-    public void setEstado(String estado) {
+    public void setEstado(Integer estado) {
         this.estado = estado;
     }
 

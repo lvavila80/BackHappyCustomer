@@ -20,9 +20,12 @@ public class ArticulosCompraDTO {
 
     @NotNull(message = "El ID de la categoría no puede ser nulo.")
     private Integer idCategoria;
+    @NotNull(message = "El estado no puede ser nulo.")
+    private Integer estado;
 
-    public ArticulosCompraDTO(Articulo articulo, int unidadesCompradas, double valorUnidad, Integer idCategoria, Integer idProveedor) {
+    public ArticulosCompraDTO(Articulo articulo, int unidadesCompradas, double valorUnidad, Integer idCategoria,Integer estado) {
         this.articulo = articulo;
+        this.estado = estado;
         this.unidadesCompradas = unidadesCompradas;
         this.valorUnidad = valorUnidad;
         this.idCategoria = idCategoria;
@@ -71,4 +74,7 @@ public class ArticulosCompraDTO {
         this.idCategoria = idCategoria;
     }
 
+    public Integer getEstado() {return estado;}
+
+    public void setEstado(Integer estado) {this.estado = estado;}
 }
