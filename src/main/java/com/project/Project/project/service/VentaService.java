@@ -123,7 +123,7 @@ public class VentaService {
         return true;
     }
 
-    public void revertirVenta(int idVenta, String detalleDevolucion, List<ProductoRevertidoDTO> productosDevueltos, boolean confirmacionUsuario) {
+    public boolean revertirVenta(int idVenta, String detalleDevolucion, List<ProductoRevertidoDTO> productosDevueltos, boolean confirmacionUsuario) {
         if (!confirmacionUsuario) {
             throw new RuntimeException("La confirmación del usuario es requerida para proceder con la reversión.");
         }
@@ -162,17 +162,23 @@ public class VentaService {
                         throw new RuntimeException("Cantidad a devolver del articulo " + detalle.getIdarticulo() + " es mayor a la vendida.");
                     }
 
-                    detalle.setEstado(4);
+                    // Disminuir las unidades vendidas en el detalle de la venta
+                    detalle.setUnidadesvendidas(detalle.getUnidadesvendidas() - producto.getCantidad());
+
+                    // Actualizar el estado y el detalle de devolución
+                    detalle.setEstado(4); // Considerar si este estado es adecuado o si se necesita otro estado
                     detalle.setDetalleDevolucion(detalleDevolucion);
                     detalleVentaRepository.save(detalle);
 
+                    // Actualizar las unidades disponibles del artículo
                     Articulo articulo = articuloRepository.findById(detalle.getIdarticulo())
                             .orElseThrow(() -> new RuntimeException("Artículo no encontrado con ID: " + detalle.getIdarticulo()));
-
                     int nuevasUnidades = articulo.getUnidadesdisponibles() + producto.getCantidad();
-                    articuloRepository.updateUnidadesDisponiblesById(detalle.getIdarticulo(), nuevasUnidades);
+                    articulo.setUnidadesdisponibles(nuevasUnidades);
+                    articuloRepository.save(articulo);
+
                     encontrado = true;
-                    break; // Rompe el bucle interno si encuentra y procesa el artículo
+                    break; // Romper el bucle si el artículo es encontrado y procesado
                 }
             }
 
@@ -180,7 +186,10 @@ public class VentaService {
                 throw new RuntimeException("Error, el id del artículo " + producto.getIdArticulo() + " no corresponde a los artículos de esta venta.");
             }
         }
+
+        return true;
     }
+
 
     public void actualizarEstadoVenta(int idVenta, articulosEstadoDTO nuevoEstado){
         if(nuevoEstado.getEstado()==4){

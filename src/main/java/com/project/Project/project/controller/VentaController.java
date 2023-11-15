@@ -12,6 +12,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 @RestController
 @RequestMapping("/api/ventas")
 public class VentaController {
@@ -36,13 +39,21 @@ public class VentaController {
     @PostMapping("/devolucionVenta")
     public ResponseEntity<String> revertirVenta(@Valid @RequestBody ReversionVentaDTO reversionVentaDTO) {
         try {
-            ventaService.revertirVenta(reversionVentaDTO.getIdVenta(), reversionVentaDTO.getMotivoReversion(), reversionVentaDTO.getDevuelto(), reversionVentaDTO.isConfirmacionUsuario());
-            return new ResponseEntity<>("Articulos devueltos exitosamente", HttpStatus.OK);
+            boolean exito = ventaService.revertirVenta(reversionVentaDTO.getIdVenta(), reversionVentaDTO.getMotivoReversion(), reversionVentaDTO.getDevuelto(), reversionVentaDTO.isConfirmacionUsuario());
+            if (exito) {
+                String mensaje = String.format("Articulos devueltos exitosamente. ID de la Venta: %d, Fecha y hora de la reversión: %s",
+                        reversionVentaDTO.getIdVenta(), LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+                return new ResponseEntity<>(mensaje, HttpStatus.OK);
+            } else {
+                // Manejar el caso en que la reversión no fue exitosa
+                return new ResponseEntity<>("La reversión de la venta no pudo completarse.", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         } catch (Exception e) {
             errorLoggingService.logError("Error en VentaController - devolucionVenta", e, reversionVentaDTO.toString());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 
     @PostMapping("/estadoVenta")
     public ResponseEntity<String> actualizarEstadoVenta(@RequestBody EstadosDTO estadosDTO) {
