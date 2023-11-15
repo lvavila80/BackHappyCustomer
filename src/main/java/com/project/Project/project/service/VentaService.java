@@ -8,6 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -42,12 +46,12 @@ public class VentaService {
         try {
 
             Optional<Cliente> cliente = clienteRepository.findById((long) ventaArticulosDTO.getIdCliente());
-            if(cliente.isEmpty()){
+            if (cliente.isEmpty()) {
                 throw new RuntimeException("El cliente no se encuentra registrado en el sistema.");
             }
 
             Optional<Usuario> usuario = usuarioRepository.findById((ventaArticulosDTO.getIdUsuario()));
-            if(usuario.isEmpty()){
+            if (usuario.isEmpty()) {
                 throw new RuntimeException("El usuario no se encuentra autorizado para realizar esta operación, o no existe en el sistema.");
             }
 
@@ -125,19 +129,38 @@ public class VentaService {
             throw new RuntimeException("La confirmación del usuario es requerida para proceder con la reversión.");
         }
 
-        List<DetalleVenta> detalles = detalleVentaRepository.findByIdventa(idVenta);
-        if(detalles.isEmpty()){
-            throw new RuntimeException("Error, No existe una Venta con este id. " );
+        long idVentaLong = (long) idVenta;
+        Optional<Venta> optionalVenta = ventaRepository.findById(idVentaLong);
+        if (optionalVenta.isPresent()) {
+            Venta venta = optionalVenta.get();
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            String fechaEnBD = dateFormat.format(venta.getFechaVenta());
+            LocalDate fechaBD = LocalDate.parse(fechaEnBD, DateTimeFormatter.ISO_LOCAL_DATE);
+            LocalDate fechaHoy = LocalDate.now();
+            Period periodo = Period.between(fechaBD, fechaHoy);
+            int diferenciaMeses = periodo.getMonths();
+            if (diferenciaMeses > 3) {
+                throw new RuntimeException("Error, La venta fue realizada hace más de 3 meses.");
+            }
+        } else {
+            throw new RuntimeException("Error, No existe una Venta con este id.");
         }
+
+        List<DetalleVenta> detalles = detalleVentaRepository.findByIdventa(idVenta);
+        if (detalles.isEmpty()) {
+            throw new RuntimeException("Error, No existe una Venta con este id.");
+        }
+
         Boolean encontrado = false;
         for (DetalleVenta detalle : detalles) {
             try {
-                if( array.contains(detalle.getIdarticulo()) && detalle.getEstado() != null && detalle.getEstado()==4 ){
+                if (array.contains(detalle.getIdarticulo()) && detalle.getEstado() != null && detalle.getEstado() == 4) {
                     throw new RuntimeException("El articulo " + detalle.getIdarticulo() + " ya se encuentra devuelto");
-                }else if(array.contains(detalle.getIdarticulo()) && (detalle.getEstado() == null || !(detalle.getEstado()==4))) {
+                } else if (array.contains(detalle.getIdarticulo()) && (detalle.getEstado() == null || !(detalle.getEstado() == 4))) {
                     detalle.setEstado(4);
                     detalle.setDetalleDevolucion(detalleDevolucion);
                     detalleVentaRepository.save(detalle);
+
                     Articulo articulo = articuloRepository.findById(detalle.getIdarticulo())
                             .orElseThrow(() -> new RuntimeException("Artículo no encontrado con ID: " + detalle.getIdarticulo()));
 
@@ -145,16 +168,15 @@ public class VentaService {
                     articuloRepository.updateUnidadesDisponiblesById(detalle.getIdarticulo(), nuevasUnidades);
                     encontrado = true;
                 }
-
             } catch (Exception e) {
                 throw new RuntimeException("Error al revertir venta: " + e.getMessage());
             }
         }
+
         if (!encontrado) {
             throw new RuntimeException("Error, el id del artículo no corresponde a los artículos de esta venta.");
         }
     }
-
 
     public void actualizarEstadoVenta(int idVenta, articulosEstadoDTO nuevoEstado){
         if(nuevoEstado.getEstado()==4){
