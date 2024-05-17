@@ -13,8 +13,6 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
     boolean existsByCorreo(String correo);
 
     boolean existsByCedula(int cedula);
-    @Query(value = "SELECT u.correo, r.rol FROM usuarios u LEFT JOIN roles r ON u.id = (SELECT idrol FROM usuario_rol ur WHERE ur.idusuario = :userId) WHERE u.id = :userId and r.id = (SELECT idrol FROM usuario_rol ur WHERE ur.idusuario = :userId);", nativeQuery = true)
-    List<Object[]> findUsuariosWithRolId(@Param("userId") int userId);
 
     Optional<Usuario> findByCorreo(String correo);
 

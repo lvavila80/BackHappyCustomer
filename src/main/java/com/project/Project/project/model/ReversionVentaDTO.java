@@ -15,7 +15,7 @@ public class ReversionVentaDTO {
     private String motivoReversion;
 
     @NotNull(message = "La lista de artículos devueltos no puede ser nula.")
-    private List<ProductoRevertidoDTO> devuelto;
+    private ArrayList<Integer> devuelto;
 
     @NotNull(message = "La confirmación del usuario es requerida.")
     private boolean confirmacionUsuario;
@@ -23,13 +23,12 @@ public class ReversionVentaDTO {
     public ReversionVentaDTO() {
     }
 
-    public ReversionVentaDTO(int idVenta, String motivoReversion, List<ProductoRevertidoDTO> devuelto, boolean confirmacionUsuario) {
+    public ReversionVentaDTO(int idVenta, String motivoReversion, ArrayList devuelto, boolean confirmacionUsuario) {
         this.idVenta = idVenta;
         this.motivoReversion = motivoReversion;
         this.devuelto = devuelto;
         this.confirmacionUsuario = confirmacionUsuario;
     }
-
 
     public int getIdVenta() {
         return idVenta;
@@ -47,11 +46,11 @@ public class ReversionVentaDTO {
         this.motivoReversion = motivoReversion;
     }
 
-    public ArrayList getDevuelto() {
-        return (ArrayList) devuelto;
+    public ArrayList<Integer> getDevuelto() {
+        return devuelto;
     }
 
-    public void setDevuelto(List<ProductoRevertidoDTO> devuelto) {
+    public void setDevuelto(ArrayList<Integer> devuelto) {
         this.devuelto = devuelto;
     }
 

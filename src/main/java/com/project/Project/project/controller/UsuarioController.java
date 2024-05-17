@@ -1,118 +1,129 @@
 package com.project.Project.project.controller;
-import com.project.Project.project.model.Usuario;
-import com.project.Project.project.model.UsuarioDAO;
-import com.project.Project.project.model.UsuarioRol;
+
+import com.project.Project.project.model.*;
 import com.project.Project.project.repository.UsuarioRepository;
-import com.project.Project.project.repository.UsuarioRolRepository;
-import com.project.Project.project.service.TokenGenerator;
-import com.project.Project.project.service.TokenGenerator;
-import com.project.Project.project.service.UsuarioService;
-import com.project.Project.project.service.EmailService;
+import com.project.Project.project.security.JwtService;
+import com.project.Project.project.service.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/usuarios")
 public class UsuarioController {
+    private static final Logger logger = LoggerFactory.getLogger(UsuarioController.class);
 
     @Autowired
     private UsuarioRepository usuarioRepository;
-
     @Autowired
     private UsuarioService usuarioService;
-
     @Autowired
-    private UsuarioRolRepository usuarioRolRepository;
-
+    private JwtService jwtService;
     @Autowired
     private EmailService emailService;
-
     @Autowired
     private TokenGenerator tokenGenerator;
+    private final PasswordEncoder passwordEncoder;
+
 
     @GetMapping("/getusuario/{id}")
-    public ResponseEntity<Usuario> getUsuarioById(@PathVariable int id) {
+    public ResponseEntity<ApiResponse> getUsuarioById(@PathVariable int id) {
         Optional<Usuario> usuario = usuarioRepository.findById(id);
         if (usuario.isPresent()) {
-            return ResponseEntity.ok(usuario.get());
+            return ResponseEntity.ok(new ApiResponse(true, "Usuario encontrado"));
         } else {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(false, "Usuario no encontrado"));
         }
     }
-    @GetMapping("/usuariosNativo/{userId}")
-    public List<Object[]> getUsuariosWithRol(@PathVariable int userId) {
-        List<Object[]> usuariosConRol = usuarioRepository.findUsuariosWithRolId(userId);
-        return usuariosConRol;
-    }
+
 
     @PostMapping("/insertarUsuario")
-    public ResponseEntity<String> insertarUsuario(@RequestBody Map<String, Object> usuarioData) {
-
+    public ResponseEntity<ApiResponse> insertarUsuario(@RequestBody Map<String, Object> usuarioData) {
         String correo = (String) usuarioData.get("correo");
         String passwd = (String) usuarioData.get("passwd");
         int cedula = (int) usuarioData.get("cedula");
         String nombre = (String) usuarioData.get("nombre");
         boolean cambiarClave = (boolean) usuarioData.get("cambiarClave");
         Date fechaUltimoCambioClave = new Date();
-
-        int idRol = (int) usuarioData.get("idRol");
+        String roleString = String.valueOf(usuarioData.get("rol")).toUpperCase(); // Corregido
+        Role rol = Role.valueOf(roleString);
+        if(((String) usuarioData.get("rol")).equals("ADMIN")){
+            rol = Role.ADMIN;
+        }else if(((String) usuarioData.get("rol")).equals("OPERATIVO")){
+            rol = Role.OPERATIVO;
+        }else if(((String) usuarioData.get("rol")).equals("AUDITOR")){
+            rol = Role.AUDITOR;
+        }else {
+            rol = Role.OPERATIVO;
+        }
 
         if (usuarioRepository.existsByCorreo(correo)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El correo ya está en uso.");
+            return ResponseEntity.badRequest().body(new ApiResponse(false,"El correo ya está en uso."));
         }
 
         if (usuarioRepository.existsByCedula(cedula)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La cédula ya está en uso.");
+            return ResponseEntity.badRequest().body(new ApiResponse(false,"La cédula ya está en uso."));
         }
 
         String valid = usuarioService.validarContrasena(passwd);
         if(!(valid.equals("ok"))){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + valid);
+            return ResponseEntity.badRequest().body(new ApiResponse(false,"No se pudo insertar el usuario: "));
         }
         int token = tokenGenerator.generateToken();
         try{
             emailService.sendSimpleMessage(correo,"Token Registro Gestion de Inventarios","Este es su token de confirmación de registro, ingreselo en la aplicación: " + token);
         }catch(Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No se pudo insertar el usuario: " + e.getMessage());
+            return ResponseEntity.badRequest().body(new ApiResponse(false,"No se pudo insertar el usuario: " + e.getMessage()));
         }
 
-        try {
-            Usuario usuario = new Usuario(correo, passwd, cedula, nombre, cambiarClave, fechaUltimoCambioClave, token);
-            UsuarioDAO nuevoUsuario = usuarioService.insertarUsuario(usuario);
 
-            UsuarioRol usuarioRol = new UsuarioRol();
-            usuarioRol.setIdUsuario(nuevoUsuario.getId());
-            usuarioRol.setIdRol(idRol);
-            usuarioRolRepository.save(usuarioRol);
-
-            return ResponseEntity.status(HttpStatus.CREATED).body("Se ha registrado con éxito. Al correo sumistrado llegará un token de verificación para activar su cuenta");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No se pudo insertar el usuario: " + e.getMessage());
+        Usuario user = Usuario.builder()
+                .correo(correo)
+                .passwd(passwordEncoder.encode(passwd))
+                .cedula(cedula)
+                .nombre(nombre)
+                .estado("Preregistro")
+                .intentosFallidos(0)
+                .cambiarClave(cambiarClave)
+                .fechaUltimoCambioClave(fechaUltimoCambioClave)
+                .token(tokenGenerator.generateToken())
+                .rol(rol)
+                .build();
+        usuarioService.insertarUsuario(user);
+        try{
+            emailService.sendSimpleMessage(correo, "Token Registro Gestión de Inventarios", "Este es su token de confirmación de registro, ingréselo en la aplicación: " + user.getToken());
+        }catch(Exception ex){
+            return ResponseEntity.badRequest().body(new ApiResponse(false, "Error al enviar correo"+ex));
         }
+        return ResponseEntity.ok(new ApiResponse(true, "Registro exitoso. Verifique su correo electrónico para confirmar su registro."));
     }
+
+
 
     @PostMapping("/authUsuario")
-    public ResponseEntity<String> validarUsuario(@RequestBody Map<String, Object> credenciales) {
+    public ResponseEntity<ApiResponse> validarUsuario(@RequestBody LoginRequest request) {
         try {
-            String correo = (String) credenciales.get("correo");
-            String passwd = (String) credenciales.get("passwd");
+            String correo = request.getCorreo();
+            String passwd = request.getPasswd();
+            AuthResponse authResponse = usuarioService.validarUsuario(correo, passwd, request);
 
-            if (usuarioService.validarUsuario(correo, passwd)) {
-                return ResponseEntity.ok("Usuario Autenticado.");
+            if (authResponse != null) {
+                return ResponseEntity.ok(new ApiResponse(true, "Usuario Autenticado. Token: " + authResponse.getToken()));
             } else {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas.");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse(false, "Credenciales inválidas."));
             }
-
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse(false, "Error: " + e.getMessage()));
         }
     }
+
 
     @PostMapping("/confirmarregistro")
     public ResponseEntity<String> confirmarRegistro(@RequestBody Map<String, Object> credenciales) {
@@ -164,6 +175,10 @@ public class UsuarioController {
     @PostMapping("/RehabilitarUsuario/{numeroToken}")
     public ResponseEntity<String> rehabilitarUsuario(@PathVariable("numeroToken") int numerotoken,@RequestBody Map<String, String> body){
         String contrasenia = body.get("contrasenia");
+        String valid = usuarioService.validarContrasena(contrasenia);
+        if(!(valid.equals("ok"))){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + valid);
+        }
         try{
             String resultado = usuarioService.recuperarContrasenia(numerotoken,contrasenia);
             if (resultado.equals("Contraseña actualizada con éxito.")) {

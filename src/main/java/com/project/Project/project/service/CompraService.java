@@ -57,8 +57,6 @@ public class CompraService {
     @Transactional
 
     public void guardarCompraYRelaciones(CompraArticulosDTO compraArticulosDTO) {
-
-
         Optional<Proveedor> proveedor = proveedorRepository.findById((long) compraArticulosDTO.getIdProveedor());
         if(proveedor.isEmpty()){
             throw new RuntimeException("El cliente no se encuentra registrado en el sistema.");
@@ -117,7 +115,6 @@ public class CompraService {
         Compra compra = compraRepository.findById(idCompra)
                 .orElseThrow(() -> new RuntimeException("Error, No existe una compra con este id."));
 
-        // Verificar si han pasado más de tres meses desde la fecha de la compra
         Date fechaActual = new Date();
         long diferenciaEnMiliseg = fechaActual.getTime() - compra.getFechacompra().getTime();
         long diasDiferencia = TimeUnit.MILLISECONDS.toDays(diferenciaEnMiliseg);

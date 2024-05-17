@@ -10,12 +10,5 @@ import java.util.List;
 
 @Repository
 public interface RolRepository extends JpaRepository<Rol, Long> {
-
-    @Query(value = "SELECT p.permiso " +
-            "FROM permisos p " +
-            "JOIN rol_permisos rp ON p.id = rp.idpermisos " +
-            "WHERE rp.idrol = :rolId", nativeQuery = true)
-    List<String> findPermisosByRolId(@Param("rolId") Long rolId);
-
 }
 

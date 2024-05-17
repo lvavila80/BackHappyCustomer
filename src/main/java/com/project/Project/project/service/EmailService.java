@@ -23,7 +23,7 @@ public class EmailService {
         try {
             mailSender.send(message);
         } catch (Exception e) {
-            throw new RuntimeException("Error al enviar un email:"+e.getMessage());
+            throw new RuntimeException("Error al enviar un email: "+e.getMessage()+ to+subject + text);
         }
     }
 }

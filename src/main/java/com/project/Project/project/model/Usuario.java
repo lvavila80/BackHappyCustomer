@@ -1,12 +1,25 @@
 package com.project.Project.project.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
+
+@Data
+@Builder
+@AllArgsConstructor
 
 @Entity
 @Table(name = "usuarios")
-public class Usuario {
+public class Usuario implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -40,10 +53,13 @@ public class Usuario {
     @Column(name = "intentos_fallidos")
     private Integer intentosFallidos;
 
+    @Column(name = "rol")
+    private Role rol;
+
     public Usuario() {
     }
 
-    public Usuario(String correo, String passwd, Integer cedula, String nombre, boolean cambiarClave, Date fechaUltimoCambioClave, Integer token) {
+    public Usuario(String correo, String passwd, Integer cedula, String nombre, boolean cambiarClave, Date fechaUltimoCambioClave, Integer token, Role rol) {
         this.correo = correo;
         this.passwd = passwd;
         this.cedula = cedula;
@@ -53,6 +69,15 @@ public class Usuario {
         this.fechaUltimoCambioClave = fechaUltimoCambioClave;
         this.token = token;
         this.intentosFallidos = 0;
+        this.rol = rol;
+    }
+
+    public String getCorreo() {
+        return correo;
+    }
+
+    public String getPasswd() {
+        return passwd;
     }
 
     public Integer getIntentosFallidos() {
@@ -61,6 +86,14 @@ public class Usuario {
 
     public void setIntentosFallidos(Integer intentosFallidos) {
         this.intentosFallidos = intentosFallidos;
+    }
+
+    public Role getRol() {
+        return rol;
+    }
+
+    public void setRol(Role rol) {
+        this.rol = rol;
     }
 
     public Integer getId() {
@@ -83,16 +116,8 @@ public class Usuario {
         this.id = id;
     }
 
-    public String getCorreo() {
-        return correo;
-    }
-
     public void setCorreo(String correo) {
         this.correo = correo;
-    }
-
-    public String getPasswd() {
-        return passwd;
     }
 
     public void setPasswd(String passwd) {
@@ -136,5 +161,35 @@ public class Usuario {
 
     public void setFechaUltimoCambioClave(Date fechaUltimoCambioClave) {
         this.fechaUltimoCambioClave = fechaUltimoCambioClave;
+    }
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_" + rol.name()));
+    }
+    @Override
+    public String getPassword() {
+        return this.passwd;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.correo;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }
