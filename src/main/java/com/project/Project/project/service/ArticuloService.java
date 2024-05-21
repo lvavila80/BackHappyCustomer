@@ -1,28 +1,71 @@
 package com.project.Project.project.service;
 
-import com.project.Project.project.model.Articulo;
-import com.project.Project.project.model.ArticulosCompraDTO;
-import com.project.Project.project.model.Compra;
-import com.project.Project.project.model.CompraArticulosDTO;
+import com.project.Project.project.model.*;
 import com.project.Project.project.repository.ArticuloRepository;
+import com.project.Project.project.repository.ArticuloCategoriaRepository;
 import com.project.Project.project.repository.CompraRepository;
+import com.project.Project.project.repository.DetalleCompraRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public class ArticuloService {
     @Autowired
     private ArticuloRepository articuloRepository;
+
     @Autowired
     private CompraRepository compraRepository;
 
+    @Autowired
+    private ArticuloCategoriaRepository articuloCategoriaRepository;
+
+    @Autowired
+    private DetalleCompraRepository detalleCompraRepository;
+
+    public List<Articulo> obtenerTodosLosArticulos() {
+        return articuloRepository.findAll();
+    }
+
+
+    public Articulo findArticuloById(int idArticulo) throws EntityNotFoundException {
+        return articuloRepository.findById(idArticulo)
+                .orElseThrow(() -> new EntityNotFoundException("No se encontró el artículo con ID " + idArticulo));
+    }
+
+    @Transactional
+    public boolean eliminarArticulo(int id) {
+        try {
+            if(detalleCompraRepository.existsByIdarticulo(id)){
+                detalleCompraRepository.deleteByIdarticulo(id);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error detalleCompra: " + e.getMessage());
+        }
+        try {
+            articuloCategoriaRepository.eliminarPorIdArticulo(id);
+        } catch (Exception e) {
+            throw new RuntimeException("Error articuloCategoria: " + e.getMessage());
+        }
+
+        try {
+            Optional<Articulo> articuloOptional = articuloRepository.findById(id);
+            if (articuloOptional.isPresent()) {
+                articuloRepository.delete(articuloOptional.get());
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            throw new RuntimeException("Error articulo: " + e.getMessage());
+        }
+    }
+
 
     public Integer guardarArticulo(ArticulosCompraDTO compraDTO) {
-            Articulo articulo = compraDTO.getArticulo();
-        // Intenta encontrar un artículo existente con los mismos atributos.
+        Articulo articulo = compraDTO.getArticulo();
         Optional<Articulo> articuloExistente = articuloRepository.findByNombrearticuloIgnoreCaseAndMarcaIgnoreCaseAndModeloIgnoreCaseAndColorIgnoreCase(
                 articulo.getNombrearticulo(),
                 articulo.getMarca(),
@@ -31,7 +74,6 @@ public class ArticuloService {
         );
 
         if (articuloExistente.isPresent()) {
-            // Si existe, actualiza el número de unidades disponibles y guarda el artículo existente.
             Articulo existente = articuloExistente.get();
             int totalUnidades = existente.getUnidadesdisponibles() + compraDTO.getUnidadesCompradas();
 
@@ -41,7 +83,11 @@ public class ArticuloService {
 
             existente.setValorunitario(valorPromedioPonderado);
             existente.setUnidadesdisponibles(totalUnidades);
-            articuloRepository.save(existente);
+            try{
+                articuloRepository.save(existente);
+            }catch (Exception e) {
+                throw new RuntimeException("Error: " + e.getMessage());
+            };
             return existente.getId();
         } else {
             // Si no existe, guarda el nuevo artículo y devuelve su ID.
@@ -100,4 +146,38 @@ public class ArticuloService {
             throw new RuntimeException("No se encontró el artículo con ID " + idArticulo);
         }
     }
+
+    @Transactional
+    public boolean actualizarArticulo(Articulo articulo, Integer idCategoria) {
+        try {
+            Articulo articuloExistente = articuloRepository.findById(articulo.getId())
+                    .orElseThrow(() -> new RuntimeException("No se encontró el artículo con ID " + articulo.getId()));
+
+            articuloExistente.setNombrearticulo(articulo.getNombrearticulo());
+            articuloExistente.setMarca(articulo.getMarca());
+            articuloExistente.setModelo(articulo.getModelo());
+            articuloExistente.setColor(articulo.getColor());
+            articuloExistente.setUnidadesdisponibles(articulo.getUnidadesdisponibles());
+            articuloExistente.setValorunitario(articulo.getValorunitario());
+            articuloRepository.save(articuloExistente);
+
+            ArticuloCategoria articuloCategoria = articuloCategoriaRepository.findByIdarticulo(articulo.getId())
+                    .orElseThrow(() -> new RuntimeException("No se encontró la categoría del artículo con ID " + articulo.getId()));
+            articuloCategoria.setIdcategoria(idCategoria);
+            articuloCategoriaRepository.save(articuloCategoria);
+
+            List<DetalleCompra> detallesCompra = detalleCompraRepository.findByIdarticulo(articulo.getId());
+            detallesCompra.forEach(detalleCompra -> {
+                detalleCompra.setUnidadescompradas(articulo.getUnidadesdisponibles());
+                detalleCompra.setValorunidad(articulo.getValorunitario());
+                detalleCompraRepository.save(detalleCompra);
+            });
+            return true;
+        } catch (Exception e) {
+            throw new RuntimeException("Error al intentar actualizar el artículo: " + e.getMessage(), e);
+        }
+    }
+
+
+
 }
