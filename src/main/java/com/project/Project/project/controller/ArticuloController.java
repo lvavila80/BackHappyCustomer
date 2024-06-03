@@ -3,6 +3,7 @@ package com.project.Project.project.controller;
 import com.project.Project.project.model.Articulo;
 import com.project.Project.project.model.ArticuloUpdateDTO;
 import com.project.Project.project.model.ArticuloUpdateValorDTO;
+import com.project.Project.project.repository.ArticuloRepository;
 import com.project.Project.project.service.ArticuloService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -15,12 +16,16 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
 @RestController
 @RequestMapping("/api/articulos")
 public class ArticuloController {
 
     @Autowired
     private ArticuloService articuloService;
+
+    @Autowired
+    private ArticuloRepository articuloRepository;
 
     @GetMapping("/todos")
     public ResponseEntity<List<Articulo>> obtenerTodosLosArticulos() {
@@ -47,11 +52,12 @@ public class ArticuloController {
         }
     }
 
-    @PutMapping("/actualizarArticulo")
-    public ResponseEntity<String> actualizarArticulo(@Valid @RequestBody ArticuloUpdateDTO articuloUpdateDTO) {
+    @PutMapping("/actualizarArticulo/{id}")
+    public ResponseEntity<String> actualizarArticulo(@PathVariable Integer id, @Valid @RequestBody ArticuloUpdateDTO articuloUpdateDTO) {
         try {
             Articulo articulo = articuloUpdateDTO.getArticulo();
             Integer idCategoria = articuloUpdateDTO.getIdCategoria();
+            articulo.setId(id);  // Asegurarse de que el artículo tenga el ID de la URL
             if (articuloService.actualizarArticulo(articulo, idCategoria)) {
                 return ResponseEntity.ok("Artículo actualizado exitosamente.");
             } else {
@@ -61,6 +67,7 @@ public class ArticuloController {
             return ResponseEntity.badRequest().body("Error al intentar actualizar el artículo: " + e.getMessage());
         }
     }
+
 
     @PutMapping("/updateValorUnitario")
     public ResponseEntity<String> updateValorUnitario(@Valid @RequestBody ArticuloUpdateValorDTO updateDTO) {
@@ -80,5 +87,4 @@ public class ArticuloController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
         }
     }
-
 }

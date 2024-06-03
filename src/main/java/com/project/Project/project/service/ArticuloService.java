@@ -30,7 +30,6 @@ public class ArticuloService {
         return articuloRepository.findAll();
     }
 
-
     public Articulo findArticuloById(int idArticulo) throws EntityNotFoundException {
         return articuloRepository.findById(idArticulo)
                 .orElseThrow(() -> new EntityNotFoundException("No se encontró el artículo con ID " + idArticulo));
@@ -39,7 +38,7 @@ public class ArticuloService {
     @Transactional
     public boolean eliminarArticulo(int id) {
         try {
-            if(detalleCompraRepository.existsByIdarticulo(id)){
+            if (detalleCompraRepository.existsByIdarticulo(id)) {
                 detalleCompraRepository.deleteByIdarticulo(id);
             }
         } catch (Exception e) {
@@ -63,7 +62,6 @@ public class ArticuloService {
         }
     }
 
-
     public Integer guardarArticulo(ArticulosCompraDTO compraDTO) {
         Articulo articulo = compraDTO.getArticulo();
         Optional<Articulo> articuloExistente = articuloRepository.findByNombrearticuloIgnoreCaseAndMarcaIgnoreCaseAndModeloIgnoreCaseAndColorIgnoreCase(
@@ -83,11 +81,11 @@ public class ArticuloService {
 
             existente.setValorunitario(valorPromedioPonderado);
             existente.setUnidadesdisponibles(totalUnidades);
-            try{
+            try {
                 articuloRepository.save(existente);
-            }catch (Exception e) {
+            } catch (Exception e) {
                 throw new RuntimeException("Error: " + e.getMessage());
-            };
+            }
             return existente.getId();
         } else {
             // Si no existe, guarda el nuevo artículo y devuelve su ID.
@@ -103,22 +101,23 @@ public class ArticuloService {
             return nuevoArticulo.getId();
         }
     }
+
     public boolean updateValorUnitario(Integer id, double valorunitario) {
-        try{
+        try {
             Optional<Articulo> articuloOptional = articuloRepository.findById(id);
             if (articuloOptional.isPresent()) {
                 Articulo articulo = articuloOptional.get();
                 articulo.setValorunitario(valorunitario);
-                try{
+                try {
                     articuloRepository.save(articulo);
                     return true;
-                }catch(Exception e){
-                    throw new RuntimeException("Error,interno al guardar el articulo ");
+                } catch (Exception e) {
+                    throw new RuntimeException("Error interno al guardar el articulo: " + e.getMessage());
                 }
             }
             return false;
-        }catch (Exception e){
-            throw new RuntimeException("Error,el articulo no existe: ");
+        } catch (Exception e) {
+            throw new RuntimeException("Error: el articulo no existe.");
         }
     }
 
@@ -127,8 +126,7 @@ public class ArticuloService {
         Optional<Articulo> optionalArticulo = articuloRepository.findById(idArticulo);
 
         if (optionalArticulo.isPresent()) {
-            Articulo articulo = optionalArticulo.get();
-            return articulo;
+            return optionalArticulo.get();
         } else {
             throw new RuntimeException("No se encontró el artículo con ID " + idArticulo);
         }
@@ -149,35 +147,38 @@ public class ArticuloService {
 
     @Transactional
     public boolean actualizarArticulo(Articulo articulo, Integer idCategoria) {
-        try {
-            Articulo articuloExistente = articuloRepository.findById(articulo.getId())
-                    .orElseThrow(() -> new RuntimeException("No se encontró el artículo con ID " + articulo.getId()));
+        if (articulo == null || articulo.getId() == null) {
+            throw new IllegalArgumentException("El artículo o su ID no pueden ser nulos.");
+        }
 
-            articuloExistente.setNombrearticulo(articulo.getNombrearticulo());
-            articuloExistente.setMarca(articulo.getMarca());
-            articuloExistente.setModelo(articulo.getModelo());
-            articuloExistente.setColor(articulo.getColor());
-            articuloExistente.setUnidadesdisponibles(articulo.getUnidadesdisponibles());
-            articuloExistente.setValorunitario(articulo.getValorunitario());
-            articuloRepository.save(articuloExistente);
+        Optional<Articulo> articuloExistente = articuloRepository.findById(articulo.getId());
+        if (articuloExistente.isPresent()) {
+            Articulo art = articuloExistente.get();
+            art.setNombrearticulo(articulo.getNombrearticulo());
+            art.setMarca(articulo.getMarca());
+            art.setModelo(articulo.getModelo());
+            art.setColor(articulo.getColor());
+            art.setUnidadesdisponibles(articulo.getUnidadesdisponibles());
+            art.setValorunitario(articulo.getValorunitario());
+            articuloRepository.save(art);
 
-            ArticuloCategoria articuloCategoria = articuloCategoriaRepository.findByIdarticulo(articulo.getId())
-                    .orElseThrow(() -> new RuntimeException("No se encontró la categoría del artículo con ID " + articulo.getId()));
+            // Actualizar la relación con la categoría
+            Optional<ArticuloCategoria> articuloCategoriaOpt = articuloCategoriaRepository.findByIdarticulo(art.getId());
+            ArticuloCategoria articuloCategoria;
+            if (articuloCategoriaOpt.isPresent()) {
+                articuloCategoria = articuloCategoriaOpt.get();
+            } else {
+                articuloCategoria = new ArticuloCategoria();
+                articuloCategoria.setIdarticulo(art.getId());
+            }
             articuloCategoria.setIdcategoria(idCategoria);
             articuloCategoriaRepository.save(articuloCategoria);
 
-            List<DetalleCompra> detallesCompra = detalleCompraRepository.findByIdarticulo(articulo.getId());
-            detallesCompra.forEach(detalleCompra -> {
-                detalleCompra.setUnidadescompradas(articulo.getUnidadesdisponibles());
-                detalleCompra.setValorunidad(articulo.getValorunitario());
-                detalleCompraRepository.save(detalleCompra);
-            });
             return true;
-        } catch (Exception e) {
-            throw new RuntimeException("Error al intentar actualizar el artículo: " + e.getMessage(), e);
+        } else {
+            return false;
         }
     }
 
-
-
 }
+
