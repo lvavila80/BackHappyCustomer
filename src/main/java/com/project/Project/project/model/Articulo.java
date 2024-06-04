@@ -32,6 +32,7 @@ public class Articulo {
     @PositiveOrZero(message = "El valor unitario no puede ser negativo.")
     private double valorunitario;
 
+
     public Articulo() {
     }
 
