@@ -34,18 +34,44 @@ public class ProveedorController {
 
     @PostMapping("/createProveedor")
     public ResponseEntity<?> createProveedor(@RequestBody Proveedor proveedor) {
-        
         Proveedor existingProveedor = proveedorRepository.findByIdentificacion(proveedor.getIdentificacion());
-
         if (existingProveedor != null) {
-
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body("El proveedor ya se encuentra registrado.");
         } else {
-
             Proveedor newProveedor = proveedorRepository.save(proveedor);
             return ResponseEntity.status(HttpStatus.CREATED).body("OK");
         }
     }
 
+    @DeleteMapping("/deleteProveedor/{id}")
+    public ResponseEntity<?> deleteProveedor(@PathVariable int id) {
+        Optional<Proveedor> proveedor = proveedorRepository.findById((long) id);
+        if (proveedor.isPresent()) {
+            proveedorRepository.deleteById((long) id);
+            return ResponseEntity.ok().body("Proveedor eliminado correctamente.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Proveedor no encontrado.");
+        }
+    }
+
+    @PutMapping("/updateProveedor/{id}")
+    public ResponseEntity<?> updateProveedor(@PathVariable int id, @RequestBody Proveedor proveedor) {
+        Optional<Proveedor> optionalProveedor = proveedorRepository.findById((long) id);
+        if (optionalProveedor.isPresent()) {
+            Proveedor existingProveedor = optionalProveedor.get();
+            existingProveedor.setNombre(proveedor.getNombre());
+            existingProveedor.setIdentificacion(proveedor.getIdentificacion());
+            existingProveedor.setTelefono(proveedor.getTelefono());
+            existingProveedor.setCorreo(proveedor.getCorreo());
+            proveedorRepository.save(existingProveedor);
+            return ResponseEntity.ok().body("Proveedor actualizado correctamente.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Proveedor no encontrado.");
+        }
+    }
+
 }
+

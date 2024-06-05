@@ -19,7 +19,6 @@ public interface ArticuloRepository extends JpaRepository<Articulo, Integer> {
             String modelo,
             String color);
 
-
     @Modifying
     @Transactional
     @Query("UPDATE Articulo a SET a.unidadesdisponibles = :unidades WHERE a.id = :id")
@@ -29,3 +28,4 @@ public interface ArticuloRepository extends JpaRepository<Articulo, Integer> {
     Optional<ArticuloCategoria> selectCategoria(@Param("idart") Integer idart);
 
 }
+

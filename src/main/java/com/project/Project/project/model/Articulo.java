@@ -9,7 +9,7 @@ public class Articulo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @NotBlank(message = "El nombre del artículo no puede estar vacío.")
     private String nombrearticulo;
@@ -32,6 +32,7 @@ public class Articulo {
     @PositiveOrZero(message = "El valor unitario no puede ser negativo.")
     private double valorunitario;
 
+
     public Articulo() {
     }
 
@@ -46,11 +47,11 @@ public class Articulo {
         this.valorunitario = valorunitario;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

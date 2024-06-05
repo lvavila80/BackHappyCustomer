@@ -12,4 +12,9 @@ import java.util.List;
 public interface DetalleCompraRepository extends JpaRepository<DetalleCompra, Integer> {
 
     List<DetalleCompra> findByIdcompra(int idcompra);
+    boolean existsByIdarticulo(int idArticulo);
+
+    void deleteByIdarticulo(int idArticulo);
+    List<DetalleCompra> findByIdarticulo(int idarticulo);
+
 }
