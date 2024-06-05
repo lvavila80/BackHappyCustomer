@@ -13,6 +13,7 @@ import java.time.Period;
 import java.time.format.DateTimeFormatter;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class VentaService {
@@ -200,45 +201,41 @@ public class VentaService {
     }
 
     public void actualizarEstadoVenta(int idVenta, articulosEstadoDTO nuevoEstado) {
-        if (nuevoEstado.getEstado() == 4) {
-            throw new RuntimeException("Error, No puede hacer devoluciones a través de este modulo, use el modulo correcto.");
+        List<DetalleVenta> detalleVenta = detalleVentaRepository.findByIdventa(idVenta);
+        if (detalleVenta.isEmpty()) {
+            throw new RuntimeException("Error, venta inexistente.");
         }
 
-        List<DetalleVenta> detalleVenta = detalleVentaService.getDetallesVentaByIdcompra(idVenta);
-        if (!detalleVenta.isEmpty()) {
-            for (DetalleVenta detalle : detalleVenta) {
+        boolean estadoCambiado = false;
+        for (DetalleVenta detalle : detalleVenta) {
+            if (detalle.getIdarticulo() == nuevoEstado.getId()) {
                 if (detalle.getEstado() == nuevoEstado.getEstado()) {
-                    throw new RuntimeException("Error, esta venta ya tiene este estado.");
+                    throw new RuntimeException("La venta ya tiene este estado.");
                 }
-                if (detalle.getIdarticulo() == nuevoEstado.getId()) {
-                    if (detalle.getEstado() == 4 || detalle.getEstado() == 3) {
-                        throw new RuntimeException("Error, la venta ya no puede cambiar de estado.");
-                    }
-                    if (detalle.getEstado() == 2 && !(nuevoEstado.getEstado() == 4)) {
-                        throw new RuntimeException("Error, las ventas confirmadas solo pueden devolverse.");
-                    }
-                    if (detalle.getEstado() == 1 && nuevoEstado.getEstado() == 4) {
-                        throw new RuntimeException("Error, la venta no puede pasar de Pendiente a Devuelto.");
-                    }
-                    if (nuevoEstado.getEstado() == 3 && !(detalle.getEstado() == 1)) {
-                        throw new RuntimeException("Error, la venta solo puede cancelarse si su estado es Pendiente.");
-                    }
-                    if (nuevoEstado.getEstado() > 4) {
-                        throw new RuntimeException("Error, estado invalido para este proceso.");
-                    }
-                }
+                detalle.setEstado(nuevoEstado.getEstado());
+                detalleVentaRepository.save(detalle);
+                estadoCambiado = true;
             }
+        }
 
-            for (DetalleVenta detalle : detalleVenta) {
-                if (detalle.getIdarticulo() == nuevoEstado.getId()) {
-                    detalle.setEstado(nuevoEstado.getEstado());
-                    detalleVentaRepository.save(detalle);
-                }
-            }
-        } else {
-            throw new RuntimeException("Error, compra inexistente.");
+        if (!estadoCambiado) {
+            throw new RuntimeException("No se encontró el artículo en la venta.");
         }
     }
 
+    public List<DetalleVentaDTO> getAllDetalleVentasCombinado() {
+        List<Venta> ventas = ventaRepository.findAll();
+        return ventas.stream().flatMap(venta -> {
+            List<DetalleVenta> detalles = detalleVentaRepository.findByIdventa(venta.getId());
+            return detalles.stream().map(detalle -> new DetalleVentaDTO(
+                    detalle.getIdventa(),
+                    detalle.getIdarticulo(),
+                    detalle.getUnidadesvendidas(),
+                    detalle.getEstado(),
+                    venta.getValorTotal(),
+                    venta.getFechaVenta()
+            ));
+        }).collect(Collectors.toList());
+    }
 
 }
