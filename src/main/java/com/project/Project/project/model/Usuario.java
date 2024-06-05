@@ -17,6 +17,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 
+
 @Entity
 @Table(name = "usuarios")
 public class Usuario implements UserDetails {
@@ -50,13 +51,20 @@ public class Usuario implements UserDetails {
     @Column(name = "token")
     private Integer token;
 
-    @Column(name = "intentos_fallidos")
-    private Integer intentosFallidos;
+    @Column(name = "intentos_fallidos", nullable = false)
+    private Integer intentosFallidos = 0;
 
     @Column(name = "rol")
     private Role rol;
 
+    @Column(name = "fecha_bloqueo")
+    private Date fechaBloqueo;
+
+    @Column(name = "cuenta_bloqueada")
+    private Boolean cuentaBloqueada;  // Usar Boolean para manejar null como estado indeterminado
+
     public Usuario() {
+        // Este constructor sigue siendo necesario para JPA.
     }
 
     public Usuario(String correo, String passwd, Integer cedula, String nombre, boolean cambiarClave, Date fechaUltimoCambioClave, Integer token, Role rol) {
@@ -70,10 +78,33 @@ public class Usuario implements UserDetails {
         this.token = token;
         this.intentosFallidos = 0;
         this.rol = rol;
+        this.cuentaBloqueada = false; // Inicialmente, la cuenta no está bloqueada
+        this.fechaBloqueo = null;     // No hay fecha de bloqueo inicial
     }
 
     public String getCorreo() {
         return correo;
+    }
+
+    public Date getFechaBloqueo() {
+        return fechaBloqueo;
+    }
+
+    public void setFechaBloqueo(Date fechaBloqueo) {
+        this.fechaBloqueo = fechaBloqueo;
+    }
+    public boolean isActivo() {
+        return "activo".equals(this.estado);  // Cambia "activo" por el valor que utilizas para indicar que el usuario está activo
+    }
+    public Boolean isCuentaBloqueada() {
+        if (cuentaBloqueada != null && cuentaBloqueada && new Date().before(this.fechaBloqueo)) {
+            return true;
+        }
+        return false;
+    }
+
+    public void setCuentaBloqueada(Boolean cuentaBloqueada) {
+        this.cuentaBloqueada = cuentaBloqueada;
     }
 
     public String getPasswd() {

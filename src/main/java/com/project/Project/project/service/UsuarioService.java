@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -88,49 +89,92 @@ public class UsuarioService implements UserDetails{
                 .token(token)
                 .build();
     }
+    public Usuario obtenerUsuarioPorCorreo(String correo) {
+        return usuarioRepository.findByCorreo(correo)
+                .orElseThrow(() -> new RuntimeException("Usuario inexistente."));
+    }
 
-    public AuthResponse validarUsuario(String correo, String passwd, LoginRequest request) {
-        Optional<Usuario> usuarioOpt = usuarioRepository.findByCorreo(correo);
-        if (usuarioOpt.isPresent()) {
-            Usuario usuario = usuarioOpt.get();
+    public AuthResponse validarUsuario(String correo, String passwd, Usuario usuario) {
+        if (usuario.getEstado().equals("Preregistro")) {
+            throw new RuntimeException("Debe confirmar su registro antes de autenticarse");
+        }
+        if (usuario.getEstado().equals("Inhabilitado")) {
+            throw new RuntimeException("El usuario se ha inhabilitado.");
+        }
 
-            if (usuario.getEstado().equals("Preregistro")) {
-                throw new RuntimeException("Debe confirmar su registro antes de autenticarse");
-            }
-            if (usuario.getEstado().equals("Inhabilitado")) {
-                throw new RuntimeException("El usuario se ha inhabilitado.");
-            }
-
-            try {
-                AuthResponse a = login(request);
-                if(usuario.getIntentosFallidos() > 0 ){
-                    usuario.setIntentosFallidos(0);
-                    usuarioRepository.save(usuario);
-                }
-                return a;
-            } catch (AuthenticationException e) {
-                // Maneja los intentos fallidos después de un intento fallido de autenticación
-                usuario.setIntentosFallidos(usuario.getIntentosFallidos() + 1);
+        try {
+            AuthResponse authResponse = login(new LoginRequest(correo, passwd));
+            resetearIntentosFallidos(usuario); // Resetea los intentos si el inicio de sesión es exitoso
+            return authResponse;
+        } catch (AuthenticationException e) {
+            incrementarIntentoFallido(usuario);
+            if (usuario.getIntentosFallidos() >= 3) {
+                usuario.setEstado("Inhabilitado");
                 usuarioRepository.save(usuario);
-                if (usuario.getIntentosFallidos() >= 3) {
-                    usuario.setEstado("Inhabilitado");
-                    usuarioRepository.save(usuario);
-                    Integer token = tokenGenerator.generateToken();
-                    usuario.setToken(token);
-                    usuarioRepository.save(usuario);
-                    try {
-                        emailService.sendSimpleMessage(correo, "Token Rehabilitación usuario", "Este es su token de recuperacion de usuario, ingreselo en la aplicación: " + token);
-                    } catch (Exception ex) {
-                        throw new IllegalArgumentException("Error al enviar correo de recuperación, consulte con el administrador");
-                    }
-                    throw new RuntimeException("El usuario se ha inhabilitado por intentos de sesión fallidos. Se ha enviado un token a su correo para habilitar su usuario");
+                Integer token = tokenGenerator.generateToken();
+                usuario.setToken(token);
+                usuarioRepository.save(usuario);
+                try {
+                    emailService.sendSimpleMessage(correo, "Token Rehabilitación usuario", "Este es su token de recuperación de usuario, ingréselo en la aplicación: " + token);
+                } catch (Exception ex) {
+                    throw new IllegalArgumentException("Error al enviar correo de recuperación, consulte con el administrador");
                 }
-                throw e;
+                throw new RuntimeException("El usuario se ha inhabilitado por intentos de sesión fallidos. Se ha enviado un token a su correo para habilitar su usuario");
             }
-        } else {
-            throw new RuntimeException("Usuario Inexistente");
+            throw e; // Relanza la excepción para mantener la traza de la autenticación fallida
         }
     }
+
+    public void incrementarIntentoFallido(Usuario usuario) {
+        usuario.setIntentosFallidos(usuario.getIntentosFallidos() + 1);
+        if (usuario.getIntentosFallidos() >= 3) {
+            usuario.setFechaBloqueo(new Date(System.currentTimeMillis() + 3600 * 1000)); // Bloqueo por 1 hora
+            usuario.setCuentaBloqueada(true);
+        }
+        usuarioRepository.save(usuario);
+    }
+
+    public void resetearIntentosFallidos(Usuario usuario) {
+        usuario.setIntentosFallidos(0);
+        usuario.setCuentaBloqueada(false);
+        usuario.setFechaBloqueo(null);
+        usuarioRepository.save(usuario);
+    }
+
+    public void bloquearCuenta(Usuario usuario) {
+        // Asumiendo que usuario tiene un campo llamado 'cuentaBloqueada'
+        usuario.setCuentaBloqueada(true);
+        usuarioRepository.save(usuario); // Guardar el estado actualizado en la base de datos
+    }
+
+    public String rehabilitarUsuario(Integer token, String correo, String nuevaContrasenia) {
+        Usuario usuario = usuarioRepository.findByCorreo(correo)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado."));
+
+        // Verifica que el token coincida y el usuario esté inhabilitado
+        if (!usuario.getToken().equals(token) || !usuario.getEstado().equals("Inhabilitado")) {
+            return "Token de rehabilitación inválido o el usuario no está inhabilitado.";
+        }
+
+        // Codifica la nueva contraseña y actualiza el usuario
+        usuario.setPasswd(passwordEncoder.encode(nuevaContrasenia));
+        usuario.setEstado("Activo"); // Cambia el estado a Activo
+        usuario.setIntentosFallidos(0);
+        usuario.setFechaBloqueo(null); // Asegúrate de limpiar cualquier fecha de bloqueo
+        usuarioRepository.save(usuario);
+
+        return "Usuario rehabilitado y contraseña actualizada.";
+    }
+
+
+    public boolean validarContrasenaUsuario(String correo, String passwd) {
+        Usuario usuario = obtenerUsuarioPorCorreo(correo);
+        if (usuario != null) {
+            return passwordEncoder.matches(passwd, usuario.getPassword());
+        }
+        return false;
+    }
+
     @Transactional
     public boolean confirmarRegistro(String correo, Integer token) {
         Usuario usuario = usuarioRepository.findByCorreo(correo)
@@ -195,6 +239,8 @@ public class UsuarioService implements UserDetails{
         }
         return "ok";
     }
+
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

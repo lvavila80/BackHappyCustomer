@@ -54,33 +54,33 @@ public class UsuarioController {
         Date fechaUltimoCambioClave = new Date();
         String roleString = String.valueOf(usuarioData.get("rol")).toUpperCase(); // Corregido
         Role rol = Role.valueOf(roleString);
-        if(((String) usuarioData.get("rol")).equals("ADMIN")){
+        if (((String) usuarioData.get("rol")).equals("ADMIN")) {
             rol = Role.ADMIN;
-        }else if(((String) usuarioData.get("rol")).equals("OPERATIVO")){
+        } else if (((String) usuarioData.get("rol")).equals("OPERATIVO")) {
             rol = Role.OPERATIVO;
-        }else if(((String) usuarioData.get("rol")).equals("AUDITOR")){
+        } else if (((String) usuarioData.get("rol")).equals("AUDITOR")) {
             rol = Role.AUDITOR;
-        }else {
+        } else {
             rol = Role.OPERATIVO;
         }
 
         if (usuarioRepository.existsByCorreo(correo)) {
-            return ResponseEntity.badRequest().body(new ApiResponse(false,"El correo ya está en uso."));
+            return ResponseEntity.badRequest().body(new ApiResponse(false, "El correo ya está en uso."));
         }
 
         if (usuarioRepository.existsByCedula(cedula)) {
-            return ResponseEntity.badRequest().body(new ApiResponse(false,"La cédula ya está en uso."));
+            return ResponseEntity.badRequest().body(new ApiResponse(false, "La cédula ya está en uso."));
         }
 
         String valid = usuarioService.validarContrasena(passwd);
-        if(!(valid.equals("ok"))){
-            return ResponseEntity.badRequest().body(new ApiResponse(false,"No se pudo insertar el usuario: "));
+        if (!(valid.equals("ok"))) {
+            return ResponseEntity.badRequest().body(new ApiResponse(false, "No se pudo insertar el usuario: "));
         }
         int token = tokenGenerator.generateToken();
-        try{
-            emailService.sendSimpleMessage(correo,"Token Registro Gestion de Inventarios","Este es su token de confirmación de registro, ingreselo en la aplicación: " + token);
-        }catch(Exception e){
-            return ResponseEntity.badRequest().body(new ApiResponse(false,"No se pudo insertar el usuario: " + e.getMessage()));
+        try {
+            emailService.sendSimpleMessage(correo, "Token Registro Gestion de Inventarios", "Este es su token de confirmación de registro, ingreselo en la aplicación: " + token);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ApiResponse(false, "No se pudo insertar el usuario: " + e.getMessage()));
         }
 
 
@@ -97,32 +97,51 @@ public class UsuarioController {
                 .rol(rol)
                 .build();
         usuarioService.insertarUsuario(user);
-        try{
+        try {
             emailService.sendSimpleMessage(correo, "Token Registro Gestión de Inventarios", "Este es su token de confirmación de registro, ingréselo en la aplicación: " + user.getToken());
-        }catch(Exception ex){
-            return ResponseEntity.badRequest().body(new ApiResponse(false, "Error al enviar correo"+ex));
+        } catch (Exception ex) {
+            return ResponseEntity.badRequest().body(new ApiResponse(false, "Error al enviar correo" + ex));
         }
         return ResponseEntity.ok(new ApiResponse(true, "Registro exitoso. Verifique su correo electrónico para confirmar su registro."));
     }
 
 
-
     @PostMapping("/authUsuario")
+
     public ResponseEntity<ApiResponse> validarUsuario(@RequestBody LoginRequest request) {
         try {
             String correo = request.getCorreo();
             String passwd = request.getPasswd();
-            AuthResponse authResponse = usuarioService.validarUsuario(correo, passwd, request);
+            Usuario usuario = usuarioService.obtenerUsuarioPorCorreo(correo);
+
+            if (usuario == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse(false, "Usuario no encontrado."));
+            }
+
+            if (usuario.isCuentaBloqueada()) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse(false, "Cuenta bloqueada. Intenta de nuevo más tarde."));
+            }
+
+            AuthResponse authResponse = usuarioService.validarUsuario(correo, passwd, usuario);
 
             if (authResponse != null) {
+                usuarioService.resetearIntentosFallidos(usuario);
                 return ResponseEntity.ok(new ApiResponse(true, "Usuario Autenticado. Token: " + authResponse.getToken()));
             } else {
+                usuarioService.incrementarIntentoFallido(usuario);
+                if (usuario.getIntentosFallidos() >= 3) {
+                    usuarioService.bloquearCuenta(usuario);
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse(false, "Usuario inhabilitado por contraseña incorrecta."));
+                }
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse(false, "Credenciales inválidas."));
             }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse(false, "Error: " + e.getMessage()));
         }
     }
+
+
+
 
 
     @PostMapping("/confirmarregistro")
@@ -158,36 +177,43 @@ public class UsuarioController {
     }
 
     @PostMapping("/ReestablecerContrasenia/{numeroToken}")
-    public ResponseEntity<String> reestablecerContrasenia(@PathVariable("numeroToken") int numeroToken, @RequestBody Map<String, String> body) {
+    public ResponseEntity<Map<String, String>> reestablecerContrasenia(@PathVariable("numeroToken") int numeroToken, @RequestBody Map<String, String> body) {
         String contrasenia = body.get("contrasenia");
-        if (String.valueOf(numeroToken).length() == 6) {
-            String resultado = usuarioService.recuperarContrasenia(numeroToken, contrasenia);
-            if (resultado.equals("Contraseña actualizada con éxito.")) {
-                return ResponseEntity.ok(resultado);
+        Map<String, String> response = new HashMap<>();
+
+        try {
+            if (String.valueOf(numeroToken).length() == 6) {
+                String resultado = usuarioService.recuperarContrasenia(numeroToken, contrasenia);
+                response.put("message", resultado);
+                return ResponseEntity.ok(response);
             } else {
-                return ResponseEntity.badRequest().body(resultado);
+                response.put("error", "El token debe ser de seis dígitos.");
+                return ResponseEntity.badRequest().body(response);
             }
-        } else {
-            return ResponseEntity.badRequest().body("El token debe ser de seis dígitos.");
+        } catch (IllegalArgumentException e) {
+            response.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
         }
     }
 
-    @PostMapping("/RehabilitarUsuario/{numeroToken}")
-    public ResponseEntity<String> rehabilitarUsuario(@PathVariable("numeroToken") int numerotoken,@RequestBody Map<String, String> body){
+
+    @PostMapping("/RehabilitarUsuario/{token}")
+    public ResponseEntity<ApiResponse> rehabilitarUsuario(
+            @PathVariable("token") Integer token,
+            @RequestBody Map<String, String> body) {
+
+        String correo = body.get("correo");
         String contrasenia = body.get("contrasenia");
-        String valid = usuarioService.validarContrasena(contrasenia);
-        if(!(valid.equals("ok"))){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + valid);
+
+        if (correo == null || contrasenia == null) {
+            return ResponseEntity.badRequest().body(new ApiResponse(false, "Correo y/o contraseña no proporcionados."));
         }
-        try{
-            String resultado = usuarioService.recuperarContrasenia(numerotoken,contrasenia);
-            if (resultado.equals("Contraseña actualizada con éxito.")) {
-                return ResponseEntity.ok("Usuario reestablecido.");
-            } else {
-                return ResponseEntity.badRequest().body(resultado);
-            }
-        }catch(Exception e){
-            return ResponseEntity.badRequest().body("Token invalido.");
+
+        try {
+            String resultado = usuarioService.rehabilitarUsuario(token, correo, contrasenia);
+            return ResponseEntity.ok(new ApiResponse(true, resultado));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse(false, "Error: " + e.getMessage()));
         }
     }
 }
